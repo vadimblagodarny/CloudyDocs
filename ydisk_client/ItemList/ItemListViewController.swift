@@ -27,7 +27,7 @@ class ItemListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-                
+
         viewModel.invokeAuthSignal.bind { [weak self] signal in
             if signal != nil {
                 // MARK: TO-DO: display Alert - "Сессия устарела. Необходима повторная авторизация"
@@ -38,7 +38,6 @@ class ItemListViewController: UIViewController {
 
         viewModel.itemsSignal.bind { [weak self] items in
             self?.dataUI = items
-            if self?.tabBarController?.tabBar.isHidden == true { self?.tabBarController?.tabBar.isHidden = false }
             self?.tableView.reloadData()
         }
 
@@ -49,19 +48,58 @@ class ItemListViewController: UIViewController {
         }
         
         setupViews()
-        
+
         switch viewModel.itemListRole {
         case .recentsViewRole: viewModel.openOnboarding()
         case .allFilesViewRole: viewModel.getDiskList()
         }
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if tabBarController?.tabBar.isHidden == true {
+            tabBarController?.tabBar.isHidden = false
+        }
+        
+        if !tableView.needsUpdateConstraints() {
+            setupConstraints()
+        }
+        
+        setupNavigationTitles()
+    }
+    
     func setupViews() {
         view.addSubview(tableView)
-        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+    }
+    
+    func setupConstraints() {
+        NSLayoutConstraint.activate([
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+
+    func setupNavigationTitles() {
+        let topTitle = NSString(string: viewModel.diskPath).lastPathComponent.components(separatedBy: "&")[0]
+        if topTitle == "disk:" {
+            navigationItem.title = "Все Файлы"
+        } else {
+            navigationItem.title = topTitle.removingPercentEncoding
+        }
+        
+        let backBarButtonItem = UIBarButtonItem()
+        let backBarButtonTitle = NSString(string: viewModel.diskPath).lastPathComponent.components(separatedBy: "&")[0]
+        
+        if backBarButtonTitle == "disk:" {
+            backBarButtonItem.title = "Все Файлы"
+        } else {
+            backBarButtonItem.title = backBarButtonTitle
+        }
+            
+        navigationItem.backBarButtonItem = backBarButtonItem
     }
     
     func openItem(item: DataUI) {

@@ -4,6 +4,7 @@ import UIKit
 protocol ItemListViewModelProtocol {
     typealias Routes = OnboardingRoute & ItemDetailsRoute & ItemListRoute
     var itemListRole: ItemListRole { get }
+    var diskPath: String { get }
     var onboardingViewDelegate: OnboardingViewDelegate? { get }
 
     init(router: Routes, network: NetworkProtocol?, role: ItemListRole, path: String)

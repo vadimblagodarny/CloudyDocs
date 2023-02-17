@@ -26,7 +26,9 @@ class Network: NetworkProtocol {
         request.setValue("OAuth \(Token.value)", forHTTPHeaderField: "Authorization")
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data else { return }
-            completion(UIImage(data: data))
+            DispatchQueue.main.async {
+                completion(UIImage(data: data))
+            }
         }.resume()
     }
 }
