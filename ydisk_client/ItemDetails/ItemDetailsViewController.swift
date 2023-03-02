@@ -5,6 +5,14 @@ import WebKit
 class ItemDetailsViewController: UIViewController {
     var viewModel: ItemDetailsViewModelProtocol!
 
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let ai = UIActivityIndicatorView()
+        ai.hidesWhenStopped = true
+        ai.translatesAutoresizingMaskIntoConstraints = false
+        ai.style = .large
+        return ai
+    }()
+    
     private lazy var webView: WKWebView = {
         let webView = WKWebView()
         webView.translatesAutoresizingMaskIntoConstraints = false
@@ -17,29 +25,30 @@ class ItemDetailsViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         view.addSubview(webView)
-        webView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-        webView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
-        webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        webView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        webView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        
-        let urlString = "https://cloud-api.yandex.net/v1/disk/resources/download?path=" + viewModel.diskPath
+        view.addSubview(activityIndicator)
+        activityIndicator.startAnimating()
 
-        DispatchQueue.global().async {
-            self.viewModel.network.dataRequest(url: urlString) { data, response, error in
+        NSLayoutConstraint.activate([
+            webView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            webView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        
+        viewModel.persistentStoreLoad()
+        viewModel.loadItem()
+        
+        viewModel.loadItemSignal.bind { [weak self] itemUI in
+            self?.activityIndicator.stopAnimating()
+            if let itemUI = itemUI {
+                guard let mime_type = itemUI.mime_type else { return }
+                guard let data = itemUI.data else { return }
+                let urlString = "data:\(mime_type);base64," + data.base64EncodedString()
                 let url = URL(string: urlString)!
-                var urlRequest = URLRequest(url: url)
-                urlRequest.httpMethod = "GET"
-                urlRequest.setValue("OAuth \(Token.value)", forHTTPHeaderField: "Authorization")
-                URLSession.shared.dataTask(with: urlRequest) { data, response, error in
-                    if let error = error { return }
-                    guard let data = data else { return }
-                    let downloadLink = try? JSONDecoder().decode(Download.self, from: data)
-                    DispatchQueue.main.async {
-                        self.webView.load(URLRequest(url: URL(string: (downloadLink?.href)!)!))
-                    }
-                }.resume()
+                let request = URLRequest(url: url)
+                self?.webView.load(request)
             }
         }
     }

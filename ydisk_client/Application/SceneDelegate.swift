@@ -24,14 +24,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let accountView = router.makeAccount()
         
-        // MARK: + Accounts View
-        
         let tabBar = UITabBarController()
         let tabs = [recentsView, allFilesView, accountView]
         tabBar.viewControllers = tabs
-        tabBar.tabBar.isHidden = true
+        tabBar.tabBar.isHidden = true // Hide TabBar for clean Onboarding view
 
-        
         window?.rootViewController = tabBar
         window?.makeKeyAndVisible()
     }
@@ -66,6 +63,5 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Save changes in the application's managed object context when the application transitions to the background.
         (UIApplication.shared.delegate as? AppDelegate)?.saveContext()
     }
-
 
 }

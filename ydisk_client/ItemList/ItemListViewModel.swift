@@ -1,36 +1,65 @@
 import Foundation
 import UIKit
+import CoreData
 
 protocol ItemListViewModelProtocol {
     typealias Routes = OnboardingRoute & ItemDetailsRoute & ItemListRoute
+    var router: Routes { get }
+    var network: NetworkProtocol! { get }
     var itemListRole: ItemListRole { get }
     var diskPath: String { get }
     var onboardingViewDelegate: OnboardingViewDelegate? { get }
-
-    init(router: Routes, network: NetworkProtocol?, role: ItemListRole, path: String)
+    var offsetCounter: Int { get set }
     
+    var persistentContainer: NSPersistentContainer { get }
+    var recentsFetchedResultsController: NSFetchedResultsController<DataOfflineRecent> { get }
+//    var allFilesFetchedResultsController: NSFetchedResultsController<DataOfflineResource> { get }
+
     var itemsSignal: Box<[DataUI]> { get }
     var openItemSignal: Box<DataUI?> { get }
     var invokeAuthSignal: Box<Bool?> { get } // What to do if Token becomes invalid
+    var alertSignal: Box<String?> { get }
 
-    func getDiskList()
-    func processRawData(items: [RawData]) -> [DataUI]
-    
+    init(router: Routes, network: NetworkProtocol?, role: ItemListRole, path: String)
+        
+    func persistentStoreLoad()
     func openOnboarding()
+    func getDiskList(offset: Int)
+    func processRawData(items: [RawData]) -> [DataUI]
     func openItem(item: DataUI)
 }
 
 class ItemListViewModel: ItemListViewModelProtocol {
     typealias Routes = OnboardingRoute & ItemDetailsRoute & ItemListRoute
-    private let router: Routes
-    private let network: NetworkProtocol!
+    internal let router: Routes
+    internal let network: NetworkProtocol!
     internal let itemListRole: ItemListRole
     internal var diskPath: String
     weak var onboardingViewDelegate: OnboardingViewDelegate?
+    var offsetCounter: Int = 0
+    
+    internal let persistentContainer = NSPersistentContainer(name: "ydisk_client")
+    
+    internal lazy var recentsFetchedResultsController: NSFetchedResultsController<DataOfflineRecent> = {
+        let fetchRequest = DataOfflineRecent.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "created", ascending: false)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        return fetchedResultsController
+    }()
+    
+//    internal lazy var allFilesFetchedResultsController: NSFetchedResultsController<DataOfflineResource> = {
+//        let fetchRequest = DataOfflineResource.fetchRequest()
+//        let sortDescriptor = NSSortDescriptor(key: "path", ascending: true)
+//        fetchRequest.sortDescriptors = [sortDescriptor]
+//        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+//        return fetchedResultsController
+//    }()
 
     var itemsSignal: Box<[DataUI]> = Box([])
     var openItemSignal: Box<DataUI?> = Box(nil)
     var invokeAuthSignal: Box<Bool?> = Box(nil)
+    var alertSignal: Box<String?> = Box(nil)
     
     required init(router: Routes, network: NetworkProtocol?, role: ItemListRole, path: String) {
         self.network = network
@@ -39,40 +68,84 @@ class ItemListViewModel: ItemListViewModelProtocol {
         self.router = router
     }
     
-    func openItem(item: DataUI) {
-        let urlEncodedString = item.path?.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        guard item.type == "dir" else {
-            let mimeType = item.mime_type ?? ""
-            router.openItemDetails(path: urlEncodedString, mimeType: mimeType, with: PushTransition()) // MARK: move transitioning to router
-            return
-        }
-        let path = urlEncodedString + "&limit=65535"
-        router.openItemList(role: ItemListRole.allFilesViewRole, path: path)
-    }
-
     func openOnboarding() {
         router.openOnboarding(opener: self)
     }
     
-    func getDiskList() {
-        var url: String = ""
-        DispatchQueue.global().async {
-            
-            switch self.itemListRole {
-            case .recentsViewRole:
-                url = "https://cloud-api.yandex.net/v1/disk/resources/last-uploaded"
-            case .allFilesViewRole:
-                url = "https://cloud-api.yandex.net/v1/disk/resources?path=\(self.diskPath)"
+    func persistentStoreLoad() {
+        persistentContainer.loadPersistentStores { persistentStoreDescription, error in
+            if let error = error {
+                print("Error loading persistent stores: \(error)")
+            } else {
+                do {
+                    switch self.itemListRole {
+                    case .recentsViewRole: try self.recentsFetchedResultsController.performFetch()
+                    case .allFilesViewRole: print("allFilesFRC.fetch") // try self.allFilesFetchedResultsController.performFetch()
+                    }
+                } catch {
+                    print(error)
+                }
             }
-            
+        }
+    }
+    
+    func getDiskList(offset: Int) {
+        var url: String = ""
+        switch self.itemListRole {
+        case .recentsViewRole:
+            url = "https://cloud-api.yandex.net/v1/disk/resources/last-uploaded"
+        case .allFilesViewRole:
+            url = "https://cloud-api.yandex.net/v1/disk/resources?path=\(self.diskPath)&offset=\(self.offsetCounter * 20)"
+            self.offsetCounter += 1
+        }
+
+        DispatchQueue.global().async {
             self.network.dataRequest(url: url) { data, response, error in
-                if let error = error { print (error); return }
+                // MARK: - Обработка ошибки соединения и подгрузка данных из Core Data
+                if let error = error {
+                    DispatchQueue.main.async {
+                        self.alertSignal.value = error.localizedDescription
+                    }
+                    
+                    if self.itemListRole == .recentsViewRole {
+                        let fetchRequest = self.recentsFetchedResultsController.fetchRequest
+                        let context = self.persistentContainer.viewContext
+
+                        do {
+                            let objects = try context.fetch(fetchRequest)
+                            let items = objects.map { object in
+                                return DataUI(name: object.name ?? "",
+                                              preview: object.preview ?? Data(),
+                                              created: object.created ?? Date(),
+                                              modified: object.modified ?? Date(),
+                                              path: object.path ?? "",
+                                              md5: object.md5 ?? "",
+                                              type: object.type ?? "",
+                                              mime_type: object.mime_type ?? "",
+                                              size: object.size ?? ""
+                                )
+                            }
+                            
+                            DispatchQueue.main.async {
+                                self.itemsSignal.value = items
+                            }
+
+                        } catch {
+                            print("Core Data fetch error: \(error)")
+                        }
+                    }
+                    return
+                }
+                
+                // MARK: - Обработка ошибки авторизации
                 if response.statusCode == 401 {
                     DispatchQueue.main.async {
                         self.invokeAuthSignal.value = true
                     }
                     return
                 }
+                
+                // MARK: - Обработка полученных данных в зависимости от типа экрана
                 guard let data = data else { return }
                 
                 switch self.itemListRole {
@@ -80,17 +153,82 @@ class ItemListViewModel: ItemListViewModelProtocol {
                     do {
                         let decodedJSON = try JSONDecoder().decode(ResourceList.self, from: data)
                         DispatchQueue.main.async {
-                            self.itemsSignal.value = self.processRawData(items: decodedJSON.items ?? [])
+                            let processedData = self.processRawData(items: decodedJSON.items ?? [])
+
+                            // MARK: - Инициализация Core Data и очистка хранилища списка последних файлов
+                            let context = self.persistentContainer.viewContext
+                            let entity = NSEntityDescription.entity(forEntityName: "DataOfflineRecent", in: context)
+                            let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "DataOfflineRecent")
+                            let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+
+                            do {
+                                try self.persistentContainer.persistentStoreCoordinator.execute(deleteRequest, with: context)
+                            } catch let error {
+                                print("Core Data cleanup error: \(error)")
+                            }
+                            
+                            // MARK: - Сохранение полученных данных в Core Data
+                            for data in processedData {
+                                let object = NSManagedObject(entity: entity!, insertInto: context)
+                                object.setValue(data.name, forKey: "name")
+                                object.setValue(data.preview, forKey: "preview")
+                                object.setValue(data.created, forKey: "created")
+                                object.setValue(data.modified, forKey: "modified")
+                                object.setValue(data.path, forKey: "path")
+                                object.setValue(data.md5, forKey: "md5")
+                                object.setValue(data.type, forKey: "type")
+                                object.setValue(data.mime_type, forKey: "mime_type")
+                                object.setValue(data.size, forKey: "size")
+                            }
+                            
+                            do {
+                                try context.save()
+                            } catch {
+                                print("Core Data save error: \(error)")
+                            }
+
+                            // MARK: - Передача полученных данных в представление данных
+                            self.itemsSignal.value = processedData
                         }
                     } catch {
-                        print(error)
+                        print("JSON decoding error: \(error)")
                     }
                     
                 case .allFilesViewRole:
                     do {
                         let decodedJSON = try JSONDecoder().decode(Resource.self, from: data)
                         DispatchQueue.main.async {
-                            self.itemsSignal.value = self.processRawData(items: decodedJSON._embedded?.items ?? [])
+                            
+                            let processedData = self.processRawData(items: decodedJSON._embedded?.items ?? [])
+
+//                            // MARK: - Инициализация Core Data (+ очистка?!)
+//                            let context = self.persistentContainer.viewContext
+//                            let entity = NSEntityDescription.entity(forEntityName: "DataOfflineResource", in: context)
+//
+//                            do {
+//                                let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "DataOfflineResource")
+//                                let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+//                                try self.persistentContainer.persistentStoreCoordinator.execute(deleteRequest, with: context)
+//                            } catch let error {
+//                                print("Core Data cleanup error: \(error)")
+//                            }
+//
+//                            // MARK: - Сохранение полученных данных в Core Data - НЕ РАБОТАЕТ :-E
+//
+//                            let object = NSManagedObject(entity: entity!, insertInto: context)
+//                            object.setValue(decodedJSON.path, forKey: "path")
+//                            object.setValue(processedData, forKey: "dataUI")
+//
+//                            do {
+//                                try context.save()
+//                            } catch {
+//                                print("Core Data save error: \(error)")
+//                            }
+
+//                            print(self.allFilesFetchedResultsController.fetchedObjects?.count) // Простая проверка
+                            
+                            // MARK: - Передача полученных данных в представление данных
+                            self.itemsSignal.value = processedData
                         }
                     } catch {
                         print(error)
@@ -101,33 +239,40 @@ class ItemListViewModel: ItemListViewModelProtocol {
     }
     
     func processRawData(items: [RawData]) -> [DataUI] {
-        var dateString: String = ""
         let dateFormatterIn = DateFormatter()
         dateFormatterIn.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
-        let dateFormatterOut = DateFormatter()
-        dateFormatterOut.dateFormat = "dd.MM.yy, HH:mm"
-        
+
         var sizeString: String = ""
         let sizeFormatter = ByteCountFormatter()
         sizeFormatter.allowedUnits = [.useAll]
         
         return items.map {
-            if $0.size == nil { sizeString = "" } else { sizeString = sizeFormatter.string(fromByteCount: $0.size!) }
-            dateString = dateFormatterOut.string(from: (dateFormatterIn.date(from: $0.created!)!))
+            if $0.size == nil { sizeString = "" } else { sizeString = sizeFormatter.string(fromByteCount: $0.size ?? 0) }
+            let previewImage = self.network.loadPreviewImage(url: $0.preview ?? "")
             
-            return DataUI(name: $0.name,
-                          preview: $0.preview,
-                          created: dateString,
-                          path: $0.path,
-                          type: $0.type,
-                          mime_type: $0.mime_type,
+            return DataUI(name: $0.name ?? "",
+                          preview: previewImage,
+                          created: dateFormatterIn.date(from: $0.created ?? "") ?? Date(),
+                          modified: dateFormatterIn.date(from: $0.modified ?? "") ?? Date(),
+                          path: $0.path ?? "",
+                          md5: $0.md5 ?? "",
+                          type: $0.type ?? "",
+                          mime_type: $0.mime_type ?? "",
                           size: sizeString)
         }
-    }    
+    }
+    
+    func openItem(item: DataUI) {
+        guard item.type == "dir" else {
+            router.openItemDetails(item: item, with: PushTransition())
+            return
+        }
+        router.openItemList(role: ItemListRole.allFilesViewRole, path: item.path!.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)
+    }
 }
 
 extension ItemListViewModel: OnboardingViewDelegate {
     func authComplete() {
-        getDiskList()
+        getDiskList(offset: offsetCounter * 20)
     }
 }

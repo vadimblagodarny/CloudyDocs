@@ -13,6 +13,11 @@
 		DD50B227297D945B0007AB4F /* ItemListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD50B226297D945B0007AB4F /* ItemListViewModel.swift */; };
 		DD50B22B297D98410007AB4F /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD50B22A297D98410007AB4F /* AccountViewModel.swift */; };
 		DD53B555297BE71800E1F3AD /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD53B554297BE71800E1F3AD /* LoginViewModel.swift */; };
+		DD76B4F129AA477E00A30A61 /* DataOfflineResource+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD76B4EF29AA477E00A30A61 /* DataOfflineResource+CoreDataClass.swift */; };
+		DD76B4F229AA477E00A30A61 /* DataOfflineResource+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD76B4F029AA477E00A30A61 /* DataOfflineResource+CoreDataProperties.swift */; };
+		DD76B4F929AA939700A30A61 /* DataOfflineItem+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD76B4F729AA939700A30A61 /* DataOfflineItem+CoreDataClass.swift */; };
+		DD76B4FA29AA939700A30A61 /* DataOfflineItem+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD76B4F829AA939700A30A61 /* DataOfflineItem+CoreDataProperties.swift */; };
+		DD76B4FC29AB5D4E00A30A61 /* ItemDetailsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD76B4FB29AB5D4E00A30A61 /* ItemDetailsModel.swift */; };
 		DD89B28D299CF0160046FD9C /* AnimatedTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD89B28C299CF0160046FD9C /* AnimatedTransition.swift */; };
 		DD89B28F299D2DCA0046FD9C /* AccountRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD89B28E299D2DCA0046FD9C /* AccountRoute.swift */; };
 		DD9C37DB2992D0550064DC8D /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9C37CE2992D0550064DC8D /* Router.swift */; };
@@ -37,6 +42,8 @@
 		DDC68EF42974B27F00DA3772 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DDC68EF32974B27F00DA3772 /* Assets.xcassets */; };
 		DDC68EF72974B27F00DA3772 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DDC68EF52974B27F00DA3772 /* LaunchScreen.storyboard */; };
 		DDC8598E298D105B00421C4F /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC8598D298D105B00421C4F /* OnboardingViewController.swift */; };
+		DDC87D6029AD3AD3001949DE /* DataOfflineRecent+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC87D5E29AD3AD3001949DE /* DataOfflineRecent+CoreDataClass.swift */; };
+		DDC87D6129AD3AD3001949DE /* DataOfflineRecent+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC87D5F29AD3AD3001949DE /* DataOfflineRecent+CoreDataProperties.swift */; };
 		DDCCEA6C29870A3300BA5826 /* ItemListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDCCEA6B29870A3300BA5826 /* ItemListCell.swift */; };
 		DDFD8EE9299AA0C0002586B3 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDFD8EE8299AA0C0002586B3 /* OnboardingViewModel.swift */; };
 		DDFD8EEB299AA3A9002586B3 /* OnboardingRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDFD8EEA299AA3A9002586B3 /* OnboardingRoute.swift */; };
@@ -49,6 +56,11 @@
 		DD50B226297D945B0007AB4F /* ItemListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemListViewModel.swift; sourceTree = "<group>"; };
 		DD50B22A297D98410007AB4F /* AccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewModel.swift; sourceTree = "<group>"; };
 		DD53B554297BE71800E1F3AD /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
+		DD76B4EF29AA477E00A30A61 /* DataOfflineResource+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataOfflineResource+CoreDataClass.swift"; sourceTree = "<group>"; };
+		DD76B4F029AA477E00A30A61 /* DataOfflineResource+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataOfflineResource+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		DD76B4F729AA939700A30A61 /* DataOfflineItem+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataOfflineItem+CoreDataClass.swift"; sourceTree = "<group>"; };
+		DD76B4F829AA939700A30A61 /* DataOfflineItem+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataOfflineItem+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		DD76B4FB29AB5D4E00A30A61 /* ItemDetailsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemDetailsModel.swift; sourceTree = "<group>"; };
 		DD89B28C299CF0160046FD9C /* AnimatedTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimatedTransition.swift; sourceTree = "<group>"; };
 		DD89B28E299D2DCA0046FD9C /* AccountRoute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountRoute.swift; sourceTree = "<group>"; };
 		DD9C37CE2992D0550064DC8D /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
@@ -75,6 +87,8 @@
 		DDC68EF62974B27F00DA3772 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DDC68EF82974B27F00DA3772 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DDC8598D298D105B00421C4F /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		DDC87D5E29AD3AD3001949DE /* DataOfflineRecent+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataOfflineRecent+CoreDataClass.swift"; sourceTree = "<group>"; };
+		DDC87D5F29AD3AD3001949DE /* DataOfflineRecent+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataOfflineRecent+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		DDCCEA6B29870A3300BA5826 /* ItemListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemListCell.swift; sourceTree = "<group>"; };
 		DDFD8EE8299AA0C0002586B3 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		DDFD8EEA299AA3A9002586B3 /* OnboardingRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingRoute.swift; sourceTree = "<group>"; };
@@ -121,6 +135,19 @@
 			path = Account;
 			sourceTree = "<group>";
 		};
+		DD82F61129A68D98005C767D /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				DDC87D5E29AD3AD3001949DE /* DataOfflineRecent+CoreDataClass.swift */,
+				DDC87D5F29AD3AD3001949DE /* DataOfflineRecent+CoreDataProperties.swift */,
+				DD76B4F729AA939700A30A61 /* DataOfflineItem+CoreDataClass.swift */,
+				DD76B4F829AA939700A30A61 /* DataOfflineItem+CoreDataProperties.swift */,
+				DD76B4EF29AA477E00A30A61 /* DataOfflineResource+CoreDataClass.swift */,
+				DD76B4F029AA477E00A30A61 /* DataOfflineResource+CoreDataProperties.swift */,
+			);
+			path = CoreData;
+			sourceTree = "<group>";
+		};
 		DD9C37CD2992D0550064DC8D /* Routes */ = {
 			isa = PBXGroup;
 			children = (
@@ -161,6 +188,7 @@
 			children = (
 				DDA90093298AEF0900D7C0F2 /* ItemDetailsViewController.swift */,
 				DDA90095298AF05D00D7C0F2 /* ItemDetailsViewModel.swift */,
+				DD76B4FB29AB5D4E00A30A61 /* ItemDetailsModel.swift */,
 			);
 			path = ItemDetails;
 			sourceTree = "<group>";
@@ -184,6 +212,7 @@
 		DDC68EE62974B27E00DA3772 /* ydisk_client */ = {
 			isa = PBXGroup;
 			children = (
+				DD82F61129A68D98005C767D /* CoreData */,
 				DDC8598C298D100A00421C4F /* Onboarding */,
 				DDC68EFE297699F200DA3772 /* Login */,
 				DD50B21D297D90470007AB4F /* ItemList */,
@@ -299,7 +328,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				DD9C37E02992D0550064DC8D /* ModalTransition.swift in Sources */,
+				DD76B4F129AA477E00A30A61 /* DataOfflineResource+CoreDataClass.swift in Sources */,
+				DDC87D6129AD3AD3001949DE /* DataOfflineRecent+CoreDataProperties.swift in Sources */,
+				DD76B4FA29AA939700A30A61 /* DataOfflineItem+CoreDataProperties.swift in Sources */,
 				DD89B28D299CF0160046FD9C /* AnimatedTransition.swift in Sources */,
+				DD76B4FC29AB5D4E00A30A61 /* ItemDetailsModel.swift in Sources */,
 				DD53B555297BE71800E1F3AD /* LoginViewModel.swift in Sources */,
 				DD9CD73F2981CA9B007F0DC0 /* ItemListModel.swift in Sources */,
 				DD9C37DE2992D0550064DC8D /* ItemListRoute.swift in Sources */,
@@ -310,12 +343,14 @@
 				DDFD8EE9299AA0C0002586B3 /* OnboardingViewModel.swift in Sources */,
 				DD50B22B297D98410007AB4F /* AccountViewModel.swift in Sources */,
 				DD89B28F299D2DCA0046FD9C /* AccountRoute.swift in Sources */,
+				DD76B4F929AA939700A30A61 /* DataOfflineItem+CoreDataClass.swift in Sources */,
 				DD9C37DB2992D0550064DC8D /* Router.swift in Sources */,
 				DD50B221297D90660007AB4F /* ItemListViewController.swift in Sources */,
 				DD9C37E12992D0550064DC8D /* Transition.swift in Sources */,
 				DDFD8EEB299AA3A9002586B3 /* OnboardingRoute.swift in Sources */,
 				DDC8598E298D105B00421C4F /* OnboardingViewController.swift in Sources */,
 				DD19E89E297B442900CEF352 /* Network.swift in Sources */,
+				DD76B4F229AA477E00A30A61 /* DataOfflineResource+CoreDataProperties.swift in Sources */,
 				DDC68EEC2974B27E00DA3772 /* LoginViewController.swift in Sources */,
 				DD9CD73D2981B9DE007F0DC0 /* Box.swift in Sources */,
 				DD9C37DC2992D0550064DC8D /* DefaultRouter.swift in Sources */,
@@ -327,6 +362,7 @@
 				DDC68EEA2974B27E00DA3772 /* SceneDelegate.swift in Sources */,
 				DD9C37E22992D0550064DC8D /* EmptyTransition.swift in Sources */,
 				DDA90094298AEF0900D7C0F2 /* ItemDetailsViewController.swift in Sources */,
+				DDC87D6029AD3AD3001949DE /* DataOfflineRecent+CoreDataClass.swift in Sources */,
 				DD9C37DD2992D0550064DC8D /* ItemRoute.swift in Sources */,
 				DDC68EF22974B27E00DA3772 /* ydisk_client.xcdatamodeld in Sources */,
 			);
