@@ -1,14 +1,14 @@
 import Foundation
 
 protocol ItemDetailsRoute {
-    func openItemDetails(path: String, mimeType: String, with transition: Transition)
+    func openItemDetails(item: DataUI, with transition: Transition)
 }
 
 extension ItemDetailsRoute where Self: Router {
-    func openItemDetails(path: String, mimeType: String, with transition: Transition) {
+    func openItemDetails(item: DataUI, with transition: Transition) {
         let router = DefaultRouter(rootTransition: transition)
         let network = Network()
-        let viewModel = ItemDetailsViewModel(router: router, network: network, path: path, mimeType: mimeType)
+        let viewModel = ItemDetailsViewModel(router: router, network: network, dataUI: item)
         let view = ItemDetailsViewController()
         view.viewModel = viewModel
         router.root = view

@@ -30,16 +30,14 @@ struct RawData: Codable {
     let size: Int64?
 }
 
-struct DataUI {
+struct DataUI: Codable {
     let name: String?
-    let preview: String?
-    let created: String?
+    let preview: Data?
+    let created: Date?
+    let modified: Date?
     let path: String?
+    let md5: String?
     let type: String?
     let mime_type: String?
     let size: String?
-}
-
-struct Download: Codable {
-    let href: String?
 }

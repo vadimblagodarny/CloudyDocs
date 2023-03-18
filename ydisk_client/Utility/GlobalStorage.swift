@@ -5,6 +5,10 @@ enum Token {
     static var value: String = ""
 }
 
+enum State {
+    static var offlineWarned: Bool = false
+}
+
 enum ItemListRole: String {
     case recentsViewRole = "Последние"
     case allFilesViewRole = "Все Файлы"
@@ -17,6 +21,6 @@ enum Resources {
     }
     
     enum Colors {
-        static let primaryAccentColor: UIColor = UIColor(red: 0.36, green: 0.57, blue: 0.70, alpha: 1.00)
+        static let primaryAccentColor: UIColor = UIColor(red: 0.97, green: 0.81, blue: 0.27, alpha: 1.00)
     }
 }

@@ -1,8 +1,6 @@
 import UIKit
 
 class ItemListCell: UITableViewCell {
-    var network = Network() as NetworkProtocol
-    
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -13,7 +11,7 @@ class ItemListCell: UITableViewCell {
     private lazy var sizeLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = label.font.withSize(15)
+        label.font = label.font.withSize(13)
         label.textColor = UIColor(red: 0.621, green: 0.621, blue: 0.621, alpha: 1)
         label.textAlignment = .right
         return label
@@ -22,7 +20,7 @@ class ItemListCell: UITableViewCell {
     private lazy var createdLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = label.font.withSize(15)
+        label.font = label.font.withSize(13)
         label.textColor = UIColor(red: 0.621, green: 0.621, blue: 0.621, alpha: 1)
         label.textAlignment = .left
         return label
@@ -54,20 +52,21 @@ class ItemListCell: UITableViewCell {
         contentView.addSubview(createdLabel)
     }
     
-    func configure(viewModel: DataUI) {
-        nameLabel.text = viewModel.name
+    func configure(viewModel: DataUI, network: NetworkProtocol) {
+        if viewModel.mime_type == "custom/offline" { return } // Убедимся, что работаем с реальным списком
+        let dateFormatterOut = DateFormatter()
+        dateFormatterOut.dateFormat = "dd.MM.yy, HH:mm"
+        let dateString = dateFormatterOut.string(from: viewModel.created!)
+        createdLabel.text = dateString
         sizeLabel.text = viewModel.size
-        createdLabel.text = viewModel.created        
-        if viewModel.type == "dir" { self.previewImage.image = UIImage(systemName: "folder")}
-        if let previewURL = viewModel.preview {
-            DispatchQueue.global().async {
-                self.network.loadPreviewImage(url: previewURL) { image in
-                    DispatchQueue.main.async {
-                        self.previewImage.image = image
-                    }
-                }
-            }
+        nameLabel.text = viewModel.name
+
+        if viewModel.type == "dir" {
+            self.previewImage.image = UIImage(systemName: "folder")
+            return
         }
+        
+        previewImage.image = UIImage(data: viewModel.preview ?? Data())
     }
     
     private func setupConstraints() {
@@ -94,6 +93,7 @@ class ItemListCell: UITableViewCell {
     }
 
     override func prepareForReuse() {
+        super.prepareForReuse()
         previewImage.image = nil
     }
 }
