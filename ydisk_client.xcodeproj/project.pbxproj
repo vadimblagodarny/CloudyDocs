@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DD059BF929B3E0FC003A2646 /* DataOfflineResource+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD059BF729B3E0FC003A2646 /* DataOfflineResource+CoreDataClass.swift */; };
+		DD059BFA29B3E0FC003A2646 /* DataOfflineResource+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD059BF829B3E0FC003A2646 /* DataOfflineResource+CoreDataProperties.swift */; };
 		DD19E89E297B442900CEF352 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD19E89D297B442900CEF352 /* Network.swift */; };
 		DD50B221297D90660007AB4F /* ItemListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD50B220297D90660007AB4F /* ItemListViewController.swift */; };
 		DD50B225297D907D0007AB4F /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD50B224297D907D0007AB4F /* AccountViewController.swift */; };
 		DD50B227297D945B0007AB4F /* ItemListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD50B226297D945B0007AB4F /* ItemListViewModel.swift */; };
 		DD50B22B297D98410007AB4F /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD50B22A297D98410007AB4F /* AccountViewModel.swift */; };
 		DD53B555297BE71800E1F3AD /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD53B554297BE71800E1F3AD /* LoginViewModel.swift */; };
-		DD76B4F129AA477E00A30A61 /* DataOfflineResource+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD76B4EF29AA477E00A30A61 /* DataOfflineResource+CoreDataClass.swift */; };
-		DD76B4F229AA477E00A30A61 /* DataOfflineResource+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD76B4F029AA477E00A30A61 /* DataOfflineResource+CoreDataProperties.swift */; };
 		DD76B4F929AA939700A30A61 /* DataOfflineItem+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD76B4F729AA939700A30A61 /* DataOfflineItem+CoreDataClass.swift */; };
 		DD76B4FA29AA939700A30A61 /* DataOfflineItem+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD76B4F829AA939700A30A61 /* DataOfflineItem+CoreDataProperties.swift */; };
 		DD76B4FC29AB5D4E00A30A61 /* ItemDetailsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD76B4FB29AB5D4E00A30A61 /* ItemDetailsModel.swift */; };
@@ -50,14 +50,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DD059BF729B3E0FC003A2646 /* DataOfflineResource+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataOfflineResource+CoreDataClass.swift"; sourceTree = "<group>"; };
+		DD059BF829B3E0FC003A2646 /* DataOfflineResource+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataOfflineResource+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		DD19E89D297B442900CEF352 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		DD50B220297D90660007AB4F /* ItemListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemListViewController.swift; sourceTree = "<group>"; };
 		DD50B224297D907D0007AB4F /* AccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewController.swift; sourceTree = "<group>"; };
 		DD50B226297D945B0007AB4F /* ItemListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemListViewModel.swift; sourceTree = "<group>"; };
 		DD50B22A297D98410007AB4F /* AccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewModel.swift; sourceTree = "<group>"; };
 		DD53B554297BE71800E1F3AD /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
-		DD76B4EF29AA477E00A30A61 /* DataOfflineResource+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataOfflineResource+CoreDataClass.swift"; sourceTree = "<group>"; };
-		DD76B4F029AA477E00A30A61 /* DataOfflineResource+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataOfflineResource+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		DD76B4F729AA939700A30A61 /* DataOfflineItem+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataOfflineItem+CoreDataClass.swift"; sourceTree = "<group>"; };
 		DD76B4F829AA939700A30A61 /* DataOfflineItem+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataOfflineItem+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		DD76B4FB29AB5D4E00A30A61 /* ItemDetailsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemDetailsModel.swift; sourceTree = "<group>"; };
@@ -138,12 +138,12 @@
 		DD82F61129A68D98005C767D /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				DD059BF729B3E0FC003A2646 /* DataOfflineResource+CoreDataClass.swift */,
+				DD059BF829B3E0FC003A2646 /* DataOfflineResource+CoreDataProperties.swift */,
 				DDC87D5E29AD3AD3001949DE /* DataOfflineRecent+CoreDataClass.swift */,
 				DDC87D5F29AD3AD3001949DE /* DataOfflineRecent+CoreDataProperties.swift */,
 				DD76B4F729AA939700A30A61 /* DataOfflineItem+CoreDataClass.swift */,
 				DD76B4F829AA939700A30A61 /* DataOfflineItem+CoreDataProperties.swift */,
-				DD76B4EF29AA477E00A30A61 /* DataOfflineResource+CoreDataClass.swift */,
-				DD76B4F029AA477E00A30A61 /* DataOfflineResource+CoreDataProperties.swift */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -328,7 +328,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DD9C37E02992D0550064DC8D /* ModalTransition.swift in Sources */,
-				DD76B4F129AA477E00A30A61 /* DataOfflineResource+CoreDataClass.swift in Sources */,
 				DDC87D6129AD3AD3001949DE /* DataOfflineRecent+CoreDataProperties.swift in Sources */,
 				DD76B4FA29AA939700A30A61 /* DataOfflineItem+CoreDataProperties.swift in Sources */,
 				DD89B28D299CF0160046FD9C /* AnimatedTransition.swift in Sources */,
@@ -350,12 +349,13 @@
 				DDFD8EEB299AA3A9002586B3 /* OnboardingRoute.swift in Sources */,
 				DDC8598E298D105B00421C4F /* OnboardingViewController.swift in Sources */,
 				DD19E89E297B442900CEF352 /* Network.swift in Sources */,
-				DD76B4F229AA477E00A30A61 /* DataOfflineResource+CoreDataProperties.swift in Sources */,
 				DDC68EEC2974B27E00DA3772 /* LoginViewController.swift in Sources */,
+				DD059BFA29B3E0FC003A2646 /* DataOfflineResource+CoreDataProperties.swift in Sources */,
 				DD9CD73D2981B9DE007F0DC0 /* Box.swift in Sources */,
 				DD9C37DC2992D0550064DC8D /* DefaultRouter.swift in Sources */,
 				DD9C37E32992D0550064DC8D /* PushTransition.swift in Sources */,
 				DDC68EE82974B27E00DA3772 /* AppDelegate.swift in Sources */,
+				DD059BF929B3E0FC003A2646 /* DataOfflineResource+CoreDataClass.swift in Sources */,
 				DD9C37DF2992D0550064DC8D /* LoginRoute.swift in Sources */,
 				DD50B225297D907D0007AB4F /* AccountViewController.swift in Sources */,
 				DDCCEA6C29870A3300BA5826 /* ItemListCell.swift in Sources */,

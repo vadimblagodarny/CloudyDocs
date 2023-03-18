@@ -2,9 +2,9 @@
 //  DataOfflineResource+CoreDataProperties.swift
 //  ydisk_client
 //
-//  Created by Vadim Blagodarny on 25.02.2023.
+//  Created by Vadim Blagodarny on 05.03.2023.
 //
-//  MARK: NOT IMPLEMENTED YET
+//
 
 import Foundation
 import CoreData
@@ -16,8 +16,8 @@ extension DataOfflineResource {
         return NSFetchRequest<DataOfflineResource>(entityName: "DataOfflineResource")
     }
 
-//    @NSManaged public var path: String?
-//    @NSManaged public var dataUI: [DataUI]?
+    @NSManaged public var jsonData: Data?
+    @NSManaged public var path: String?
 
 }
 

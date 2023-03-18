@@ -113,16 +113,7 @@ class ItemDetailsViewModel: ItemDetailsViewModelProtocol {
                                 let entity = NSEntityDescription.entity(forEntityName: "DataOfflineItem", in: context)
                                 let fetchRequest = self.itemFetchedResultsController.fetchRequest
                                 var objects: [DataOfflineItem] = []
-                                
-//                                // MARK: - Debug Cleaning
-//                                do {
-//                                    let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "DataOfflineItem")
-//                                    let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-//                                    try self.persistentContainer.persistentStoreCoordinator.execute(deleteRequest, with: context)
-//                                } catch let error {
-//                                    print("Core Data cleanup error: \(error)")
-//                                }
-                                
+
                                 do {
                                     objects = try context.fetch(fetchRequest)
                                 } catch {
@@ -148,13 +139,6 @@ class ItemDetailsViewModel: ItemDetailsViewModelProtocol {
                                 print("Item downloading error: \(error.localizedDescription)")
                             }
                         }
-
-//                        // MARK: - Debug check for objects count
-//                        print(self.itemFetchedResultsController.fetchedObjects?.count)
-                        
-                        // MARK: - Передача полученных данных в представление данных
-//                        self.loadItemSignal.value = URLRequest(url: URL(string: downloadLink?.href ?? "")!)
-                        
                     }
                 }.resume()
             }

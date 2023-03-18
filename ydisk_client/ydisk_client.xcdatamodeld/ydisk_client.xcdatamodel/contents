@@ -16,7 +16,7 @@
         <attribute name="type" optional="YES" attributeType="String"/>
     </entity>
     <entity name="DataOfflineResource" representedClassName="DataOfflineResource" syncable="YES">
-        <attribute name="dataUI" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[DataUI]"/>
+        <attribute name="jsonData" optional="YES" attributeType="Binary" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[DataUI]"/>
         <attribute name="path" optional="YES" attributeType="String"/>
     </entity>
 </model>

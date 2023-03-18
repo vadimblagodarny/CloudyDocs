@@ -32,9 +32,18 @@ class ItemListViewController: UIViewController {
         return ai
     }()
     
+    private lazy var offlineLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Offline mode / No cache"
+        return label
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        view.overrideUserInterfaceStyle = .light
+        tabBarController?.overrideUserInterfaceStyle = .light
 
         viewModel.invokeAuthSignal.bind { [weak self] signal in
             if signal != nil {
@@ -56,16 +65,26 @@ class ItemListViewController: UIViewController {
             }
             self?.tableView.reloadData()
             self?.activityIndicator.stopAnimating()
+            if self?.dataUI[0].mime_type == "custom/offline" {
+                self?.tableView.allowsSelection = false
+                self?.offlineLabel.isHidden = false
+            } else {
+                self?.tableView.allowsSelection = true
+                self?.offlineLabel.isHidden = true
+            }
         }
 
         viewModel.openItemSignal.bind { [weak self] item in
             if let item = item {
+                guard item.mime_type != "custom/offline" else { return }
                 self?.viewModel.openItem(item: item)
             }
         }
         
         viewModel.alertSignal.bind { [weak self] error in
             if let error = error {
+                self?.activityIndicator.stopAnimating()
+                guard !State.offlineWarned else { return } // Показать предупреждение отсуствия сети один раз
                 let alert = UIAlertController(title: "Warning", message: error, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "Close", style: .default, handler: { [weak self] _ in
                     // Устраняем залипание tableView при вызове этого обработчика
@@ -74,6 +93,7 @@ class ItemListViewController: UIViewController {
                 }))
                 self?.viewModel.alertSignal.value = nil
                 self?.present(alert, animated: true)
+                State.offlineWarned = true // Показали предупреждение
             }
         }
         
@@ -96,17 +116,22 @@ class ItemListViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        // Unhide TabBar after Onboarding
+        // Unhide TabBar after successful onboarding
         if tabBarController?.tabBar.isHidden == true {
             tabBarController?.tabBar.isHidden = false
         }
         
+        view.backgroundColor = .white
+        view.overrideUserInterfaceStyle = .light
+        tabBarController?.overrideUserInterfaceStyle = .light
         setupNavigationTitles()
     }
     
     func setupViews() {
         view.addSubview(tableView)
         view.addSubview(activityIndicator)
+        view.addSubview(offlineLabel)
+        offlineLabel.isHidden = true
     }
     
     func setupConstraints() {
@@ -115,6 +140,8 @@ class ItemListViewController: UIViewController {
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            offlineLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            offlineLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])

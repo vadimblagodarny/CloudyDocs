@@ -13,11 +13,11 @@ protocol ItemListViewModelProtocol {
     
     var persistentContainer: NSPersistentContainer { get }
     var recentsFetchedResultsController: NSFetchedResultsController<DataOfflineRecent> { get }
-//    var allFilesFetchedResultsController: NSFetchedResultsController<DataOfflineResource> { get }
+    var allFilesFetchedResultsController: NSFetchedResultsController<DataOfflineResource> { get }
 
     var itemsSignal: Box<[DataUI]> { get }
     var openItemSignal: Box<DataUI?> { get }
-    var invokeAuthSignal: Box<Bool?> { get } // What to do if Token becomes invalid
+    var invokeAuthSignal: Box<Bool?> { get }
     var alertSignal: Box<String?> { get }
 
     init(router: Routes, network: NetworkProtocol?, role: ItemListRole, path: String)
@@ -48,13 +48,13 @@ class ItemListViewModel: ItemListViewModelProtocol {
         return fetchedResultsController
     }()
     
-//    internal lazy var allFilesFetchedResultsController: NSFetchedResultsController<DataOfflineResource> = {
-//        let fetchRequest = DataOfflineResource.fetchRequest()
-//        let sortDescriptor = NSSortDescriptor(key: "path", ascending: true)
-//        fetchRequest.sortDescriptors = [sortDescriptor]
-//        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: nil)
-//        return fetchedResultsController
-//    }()
+    internal lazy var allFilesFetchedResultsController: NSFetchedResultsController<DataOfflineResource> = {
+        let fetchRequest = DataOfflineResource.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "path", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        return fetchedResultsController
+    }()
 
     var itemsSignal: Box<[DataUI]> = Box([])
     var openItemSignal: Box<DataUI?> = Box(nil)
@@ -80,7 +80,7 @@ class ItemListViewModel: ItemListViewModelProtocol {
                 do {
                     switch self.itemListRole {
                     case .recentsViewRole: try self.recentsFetchedResultsController.performFetch()
-                    case .allFilesViewRole: print("allFilesFRC.fetch") // try self.allFilesFetchedResultsController.performFetch()
+                    case .allFilesViewRole: try self.allFilesFetchedResultsController.performFetch()
                     }
                 } catch {
                     print(error)
@@ -93,7 +93,7 @@ class ItemListViewModel: ItemListViewModelProtocol {
         var url: String = ""
         switch self.itemListRole {
         case .recentsViewRole:
-            url = "https://cloud-api.yandex.net/v1/disk/resources/last-uploaded"
+            url = "https://cloud-api.yandex.net/v1/disk/resources/last-uploaded?media_type=image,document,spreadsheet"
         case .allFilesViewRole:
             url = "https://cloud-api.yandex.net/v1/disk/resources?path=\(self.diskPath)&offset=\(self.offsetCounter * 20)"
             self.offsetCounter += 1
@@ -110,7 +110,7 @@ class ItemListViewModel: ItemListViewModelProtocol {
                     if self.itemListRole == .recentsViewRole {
                         let fetchRequest = self.recentsFetchedResultsController.fetchRequest
                         let context = self.persistentContainer.viewContext
-
+                        
                         do {
                             let objects = try context.fetch(fetchRequest)
                             let items = objects.map { object in
@@ -129,14 +129,35 @@ class ItemListViewModel: ItemListViewModelProtocol {
                             DispatchQueue.main.async {
                                 self.itemsSignal.value = items
                             }
-
+                            
                         } catch {
                             print("Core Data fetch error: \(error)")
+                        }
+                        
+                    } else if self.itemListRole == .allFilesViewRole {
+                        let fetchRequest = self.allFilesFetchedResultsController.fetchRequest
+                        let context = self.persistentContainer.viewContext
+                        
+                        do {
+                            let objects = try context.fetch(fetchRequest)
+                            let object = objects.filter{ $0.path == self.diskPath.removingPercentEncoding }.first
+                            guard let jsonData = object?.jsonData else {
+                                DispatchQueue.main.async {
+                                    self.itemsSignal.value = [DataUI(name: nil, preview: nil, created: nil, modified: nil, path: nil, md5: nil, type: nil, mime_type: "custom/offline", size: nil)]
+                                }
+                                return
+                            }
+                            let decodedJSON = try JSONDecoder().decode([DataUI].self, from: jsonData)
+                            DispatchQueue.main.async {
+                                self.itemsSignal.value = decodedJSON
+                            }
+                        } catch {
+                            print("Error: \(error)")
                         }
                     }
                     return
                 }
-                
+
                 // MARK: - Обработка ошибки авторизации
                 if response.statusCode == 401 {
                     DispatchQueue.main.async {
@@ -147,7 +168,8 @@ class ItemListViewModel: ItemListViewModelProtocol {
                 
                 // MARK: - Обработка полученных данных в зависимости от типа экрана
                 guard let data = data else { return }
-                
+                State.offlineWarned = false // Сброс предупреждения об отсуствии сети
+
                 switch self.itemListRole {
                 case .recentsViewRole:
                     do {
@@ -200,33 +222,34 @@ class ItemListViewModel: ItemListViewModelProtocol {
                         DispatchQueue.main.async {
                             
                             let processedData = self.processRawData(items: decodedJSON._embedded?.items ?? [])
-
-//                            // MARK: - Инициализация Core Data (+ очистка?!)
-//                            let context = self.persistentContainer.viewContext
-//                            let entity = NSEntityDescription.entity(forEntityName: "DataOfflineResource", in: context)
-//
-//                            do {
-//                                let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "DataOfflineResource")
-//                                let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-//                                try self.persistentContainer.persistentStoreCoordinator.execute(deleteRequest, with: context)
-//                            } catch let error {
-//                                print("Core Data cleanup error: \(error)")
-//                            }
-//
-//                            // MARK: - Сохранение полученных данных в Core Data - НЕ РАБОТАЕТ :-E
-//
-//                            let object = NSManagedObject(entity: entity!, insertInto: context)
-//                            object.setValue(decodedJSON.path, forKey: "path")
-//                            object.setValue(processedData, forKey: "dataUI")
-//
-//                            do {
-//                                try context.save()
-//                            } catch {
-//                                print("Core Data save error: \(error)")
-//                            }
-
-//                            print(self.allFilesFetchedResultsController.fetchedObjects?.count) // Простая проверка
+                            let path = decodedJSON.path
                             
+                            // MARK: - Инициализация Core Data
+                            let context = self.persistentContainer.viewContext
+                            let entity = NSEntityDescription.entity(forEntityName: "DataOfflineResource", in: context)
+                            let fetchRequest = self.allFilesFetchedResultsController.fetchRequest
+                            var objects: [DataOfflineResource] = []
+
+                            do {
+                                objects = try context.fetch(fetchRequest)
+                            } catch {
+                                print("Core Data fetch error: \(error)")
+                            }
+                            
+                            // MARK: - Проверка на существующий объект в Core Data и сохранение нового
+                            let encodedData = try? JSONEncoder().encode(processedData)
+                            if !objects.contains(where: { $0.path == decodedJSON.path }) {
+                                let object = NSManagedObject(entity: entity!, insertInto: context)
+                                object.setValue(path, forKey: "path")
+                                object.setValue(encodedData, forKey: "jsonData")
+                                
+                                do {
+                                    try context.save()
+                                } catch {
+                                    print("Core Data save error: \(error)")
+                                }
+                            }
+
                             // MARK: - Передача полученных данных в представление данных
                             self.itemsSignal.value = processedData
                         }
@@ -247,9 +270,9 @@ class ItemListViewModel: ItemListViewModelProtocol {
         sizeFormatter.allowedUnits = [.useAll]
         
         return items.map {
+            var previewImage = Data()
             if $0.size == nil { sizeString = "" } else { sizeString = sizeFormatter.string(fromByteCount: $0.size ?? 0) }
-            let previewImage = self.network.loadPreviewImage(url: $0.preview ?? "")
-            
+            if !State.offlineWarned { previewImage = self.network.loadPreviewImage(url: $0.preview ?? "") }
             return DataUI(name: $0.name ?? "",
                           preview: previewImage,
                           created: dateFormatterIn.date(from: $0.created ?? "") ?? Date(),

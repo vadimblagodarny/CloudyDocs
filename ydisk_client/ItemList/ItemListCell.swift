@@ -53,20 +53,20 @@ class ItemListCell: UITableViewCell {
     }
     
     func configure(viewModel: DataUI, network: NetworkProtocol) {
+        if viewModel.mime_type == "custom/offline" { return } // Убедимся, что работаем с реальным списком
         let dateFormatterOut = DateFormatter()
         dateFormatterOut.dateFormat = "dd.MM.yy, HH:mm"
-        let dateString = dateFormatterOut.string(from: (viewModel.created ?? Date()))
-        
-        nameLabel.text = viewModel.name
-        sizeLabel.text = viewModel.size
+        let dateString = dateFormatterOut.string(from: viewModel.created!)
         createdLabel.text = dateString
-        
+        sizeLabel.text = viewModel.size
+        nameLabel.text = viewModel.name
+
         if viewModel.type == "dir" {
             self.previewImage.image = UIImage(systemName: "folder")
             return
         }
         
-        previewImage.image = UIImage(data: viewModel.preview ?? Data())        
+        previewImage.image = UIImage(data: viewModel.preview ?? Data())
     }
     
     private func setupConstraints() {
