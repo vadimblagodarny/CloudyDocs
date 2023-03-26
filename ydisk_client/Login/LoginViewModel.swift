@@ -1,6 +1,10 @@
 import Foundation
 import WebKit
 
+protocol LoginViewDelegate: AnyObject {
+    func passToken(token: String)
+}
+
 protocol LoginViewModelProtocol: WKNavigationDelegate {
     typealias Routes = LoginRoute & Dismissable
     var apiURL: String { get }

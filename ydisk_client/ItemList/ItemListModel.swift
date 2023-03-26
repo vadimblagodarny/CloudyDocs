@@ -19,6 +19,8 @@ struct Resource: Codable {
 }
 
 struct RawData: Codable {
+    let public_key: String?
+    let public_url: String?
     let name: String?
     let preview: String?
     let created: String?
@@ -31,6 +33,8 @@ struct RawData: Codable {
 }
 
 struct DataUI: Codable {
+    let public_key: String?
+    let public_url: String?
     let name: String?
     let preview: Data?
     let created: Date?

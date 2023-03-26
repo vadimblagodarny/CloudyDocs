@@ -14,7 +14,21 @@ extension ItemListRoute where Self: Router { // Recents & All Files View Route
         view.viewModel = viewModel
         router.root = view
         let navigation = UINavigationController(rootViewController: view)
-        navigation.tabBarItem = UITabBarItem(title: role.rawValue, image: tabImage, tag: 0)
+        switch role {
+//        case .recentsViewRole:
+//            navigation.tabBarItem = UITabBarItem(title: Text.ItemListRole.recents, image: tabImage, tag: 0)
+//        case .allFilesViewRole:
+//            navigation.tabBarItem = UITabBarItem(title: Text.ItemListRole.allFiles, image: tabImage, tag: 0)
+//        case .publishedViewRole:
+//            navigation.tabBarItem = UITabBarItem(title: Text.ItemListRole.published, image: tabImage, tag: 0)
+        case .recentsViewRole:
+            navigation.tabBarItem = UITabBarItem(title: nil, image: tabImage, tag: 0)
+        case .allFilesViewRole:
+            navigation.tabBarItem = UITabBarItem(title: nil, image: tabImage, tag: 0)
+        case .publishedViewRole:
+            navigation.tabBarItem = UITabBarItem(title: nil, image: tabImage, tag: 0)
+        }
+        
         return navigation
     }
 

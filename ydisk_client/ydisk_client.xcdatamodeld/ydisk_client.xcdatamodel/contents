@@ -4,6 +4,19 @@
         <attribute name="data" optional="YES" attributeType="Binary"/>
         <attribute name="md5" optional="YES" attributeType="String"/>
     </entity>
+    <entity name="DataOfflinePublished" representedClassName="DataOfflinePublished" syncable="YES">
+        <attribute name="created" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="md5" optional="YES" attributeType="String"/>
+        <attribute name="mime_type" optional="YES" attributeType="String"/>
+        <attribute name="modified" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="path" optional="YES" attributeType="String"/>
+        <attribute name="preview" optional="YES" attributeType="Binary"/>
+        <attribute name="public_key" optional="YES" attributeType="String"/>
+        <attribute name="public_url" optional="YES" attributeType="String"/>
+        <attribute name="size" optional="YES" attributeType="String"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+    </entity>
     <entity name="DataOfflineRecent" representedClassName="DataOfflineRecent" syncable="YES">
         <attribute name="created" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="md5" optional="YES" attributeType="String"/>
@@ -12,6 +25,8 @@
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="path" optional="YES" attributeType="String"/>
         <attribute name="preview" optional="YES" attributeType="Binary"/>
+        <attribute name="public_key" optional="YES" attributeType="String"/>
+        <attribute name="public_url" optional="YES" attributeType="String"/>
         <attribute name="size" optional="YES" attributeType="String"/>
         <attribute name="type" optional="YES" attributeType="String"/>
     </entity>

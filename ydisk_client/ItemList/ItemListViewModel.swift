@@ -14,6 +14,7 @@ protocol ItemListViewModelProtocol {
     var persistentContainer: NSPersistentContainer { get }
     var recentsFetchedResultsController: NSFetchedResultsController<DataOfflineRecent> { get }
     var allFilesFetchedResultsController: NSFetchedResultsController<DataOfflineResource> { get }
+    var publishedFetchedResultsController: NSFetchedResultsController<DataOfflinePublished> { get }
 
     var itemsSignal: Box<[DataUI]> { get }
     var openItemSignal: Box<DataUI?> { get }
@@ -56,6 +57,14 @@ class ItemListViewModel: ItemListViewModelProtocol {
         return fetchedResultsController
     }()
 
+    internal lazy var publishedFetchedResultsController: NSFetchedResultsController<DataOfflinePublished> = {
+        let fetchRequest = DataOfflinePublished.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "created", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        return fetchedResultsController
+    }()
+
     var itemsSignal: Box<[DataUI]> = Box([])
     var openItemSignal: Box<DataUI?> = Box(nil)
     var invokeAuthSignal: Box<Bool?> = Box(nil)
@@ -81,6 +90,7 @@ class ItemListViewModel: ItemListViewModelProtocol {
                     switch self.itemListRole {
                     case .recentsViewRole: try self.recentsFetchedResultsController.performFetch()
                     case .allFilesViewRole: try self.allFilesFetchedResultsController.performFetch()
+                    case .publishedViewRole: try self.publishedFetchedResultsController.performFetch()
                     }
                 } catch {
                     print(error)
@@ -97,24 +107,30 @@ class ItemListViewModel: ItemListViewModelProtocol {
         case .allFilesViewRole:
             url = "https://cloud-api.yandex.net/v1/disk/resources?path=\(self.diskPath)&offset=\(self.offsetCounter * 20)"
             self.offsetCounter += 1
+        case .publishedViewRole:
+            url = "https://cloud-api.yandex.net/v1/disk/resources/public?limit=20&offset=\(self.offsetCounter * 20)"
+            self.offsetCounter += 1
         }
 
         DispatchQueue.global().async {
-            self.network.dataRequest(url: url) { data, response, error in
+            self.network.dataRequest(method: "GET", url: url) { data, response, error in
                 // MARK: - Обработка ошибки соединения и подгрузка данных из Core Data
                 if let error = error {
                     DispatchQueue.main.async {
                         self.alertSignal.value = error.localizedDescription
                     }
                     
-                    if self.itemListRole == .recentsViewRole {
+                    switch self.itemListRole {
+                    case .recentsViewRole:
                         let fetchRequest = self.recentsFetchedResultsController.fetchRequest
                         let context = self.persistentContainer.viewContext
                         
                         do {
                             let objects = try context.fetch(fetchRequest)
                             let items = objects.map { object in
-                                return DataUI(name: object.name ?? "",
+                                return DataUI(public_key: object.public_key ?? "",
+                                              public_url: object.public_url ?? "",
+                                              name: object.name ?? "",
                                               preview: object.preview ?? Data(),
                                               created: object.created ?? Date(),
                                               modified: object.modified ?? Date(),
@@ -134,7 +150,7 @@ class ItemListViewModel: ItemListViewModelProtocol {
                             print("Core Data fetch error: \(error)")
                         }
                         
-                    } else if self.itemListRole == .allFilesViewRole {
+                    case .allFilesViewRole:
                         let fetchRequest = self.allFilesFetchedResultsController.fetchRequest
                         let context = self.persistentContainer.viewContext
                         
@@ -143,7 +159,7 @@ class ItemListViewModel: ItemListViewModelProtocol {
                             let object = objects.filter{ $0.path == self.diskPath.removingPercentEncoding }.first
                             guard let jsonData = object?.jsonData else {
                                 DispatchQueue.main.async {
-                                    self.itemsSignal.value = [DataUI(name: nil, preview: nil, created: nil, modified: nil, path: nil, md5: nil, type: nil, mime_type: "custom/offline", size: nil)]
+                                    self.itemsSignal.value = [DataUI(public_key: nil, public_url: nil, name: nil, preview: nil, created: nil, modified: nil, path: nil, md5: nil, type: nil, mime_type: "custom/offline", size: nil)]
                                 }
                                 return
                             }
@@ -153,6 +169,35 @@ class ItemListViewModel: ItemListViewModelProtocol {
                             }
                         } catch {
                             print("Error: \(error)")
+                        }
+                        
+                    case .publishedViewRole:
+                        let fetchRequest = self.publishedFetchedResultsController.fetchRequest
+                        let context = self.persistentContainer.viewContext
+                        
+                        do {
+                            let objects = try context.fetch(fetchRequest)
+                            let items = objects.map { object in
+                                return DataUI(public_key: object.public_key ?? "",
+                                              public_url: object.public_url ?? "",
+                                              name: object.name ?? "",
+                                              preview: object.preview ?? Data(),
+                                              created: object.created ?? Date(),
+                                              modified: object.modified ?? Date(),
+                                              path: object.path ?? "",
+                                              md5: object.md5 ?? "",
+                                              type: object.type ?? "",
+                                              mime_type: object.mime_type ?? "",
+                                              size: object.size ?? ""
+                                )
+                            }
+                            
+                            DispatchQueue.main.async {
+                                self.itemsSignal.value = items
+                            }
+                            
+                        } catch {
+                            print("Core Data fetch error: \(error)")
                         }
                     }
                     return
@@ -168,7 +213,7 @@ class ItemListViewModel: ItemListViewModelProtocol {
                 
                 // MARK: - Обработка полученных данных в зависимости от типа экрана
                 guard let data = data else { return }
-                State.offlineWarned = false // Сброс предупреждения об отсуствии сети
+                Flag.offlineWarned = false // Сеть появилась -> сброс предупреждения об отсуствии сети
 
                 switch self.itemListRole {
                 case .recentsViewRole:
@@ -192,6 +237,8 @@ class ItemListViewModel: ItemListViewModelProtocol {
                             // MARK: - Сохранение полученных данных в Core Data
                             for data in processedData {
                                 let object = NSManagedObject(entity: entity!, insertInto: context)
+                                object.setValue(data.public_key, forKey: "public_key")
+                                object.setValue(data.public_url, forKey: "public_url")
                                 object.setValue(data.name, forKey: "name")
                                 object.setValue(data.preview, forKey: "preview")
                                 object.setValue(data.created, forKey: "created")
@@ -236,18 +283,27 @@ class ItemListViewModel: ItemListViewModelProtocol {
                                 print("Core Data fetch error: \(error)")
                             }
                             
-                            // MARK: - Проверка на существующий объект в Core Data и сохранение нового
                             let encodedData = try? JSONEncoder().encode(processedData)
-                            if !objects.contains(where: { $0.path == decodedJSON.path }) {
-                                let object = NSManagedObject(entity: entity!, insertInto: context)
-                                object.setValue(path, forKey: "path")
-                                object.setValue(encodedData, forKey: "jsonData")
-                                
+                            
+                            // MARK: - Проверка на существующий объект в Core Data и сохранение нового
+                            if objects.contains(where: { $0.path == decodedJSON.path }) {
+                                let object = objects.filter { $0.path == decodedJSON.path }
+                                context.delete(object[0])
                                 do {
                                     try context.save()
                                 } catch {
                                     print("Core Data save error: \(error)")
                                 }
+                            }
+                            
+                            let object = NSManagedObject(entity: entity!, insertInto: context)
+                            object.setValue(path, forKey: "path")
+                            object.setValue(encodedData, forKey: "jsonData")
+
+                            do {
+                                try context.save()
+                            } catch {
+                                print("Core Data save error: \(error)")
                             }
 
                             // MARK: - Передача полученных данных в представление данных
@@ -256,6 +312,54 @@ class ItemListViewModel: ItemListViewModelProtocol {
                     } catch {
                         print(error)
                     }
+                    
+                case .publishedViewRole:
+                    do {
+                        let decodedJSON = try JSONDecoder().decode(ResourceList.self, from: data)
+                        DispatchQueue.main.async {
+                            let processedData = self.processRawData(items: decodedJSON.items ?? [])
+
+                            // MARK: - Инициализация Core Data и очистка хранилища списка опубликованных файлов
+                            let context = self.persistentContainer.viewContext
+                            let entity = NSEntityDescription.entity(forEntityName: "DataOfflinePublished", in: context)
+                            let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "DataOfflinePublished")
+                            let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+
+                            do {
+                                try self.persistentContainer.persistentStoreCoordinator.execute(deleteRequest, with: context)
+                            } catch let error {
+                                print("Core Data cleanup error: \(error)")
+                            }
+                            
+                            // MARK: - Сохранение полученных данных в Core Data
+                            for data in processedData {
+                                let object = NSManagedObject(entity: entity!, insertInto: context)
+                                object.setValue(data.public_key, forKey: "public_key")
+                                object.setValue(data.public_url, forKey: "public_url")
+                                object.setValue(data.name, forKey: "name")
+                                object.setValue(data.preview, forKey: "preview")
+                                object.setValue(data.created, forKey: "created")
+                                object.setValue(data.modified, forKey: "modified")
+                                object.setValue(data.path, forKey: "path")
+                                object.setValue(data.md5, forKey: "md5")
+                                object.setValue(data.type, forKey: "type")
+                                object.setValue(data.mime_type, forKey: "mime_type")
+                                object.setValue(data.size, forKey: "size")
+                            }
+                            
+                            do {
+                                try context.save()
+                            } catch {
+                                print("Core Data save error: \(error)")
+                            }
+
+                            // MARK: - Передача полученных данных в представление данных
+                            self.itemsSignal.value = processedData
+                        }
+                    } catch {
+                        print("JSON decoding error: \(error)")
+                    }
+
                 }
             }
         }
@@ -272,8 +376,10 @@ class ItemListViewModel: ItemListViewModelProtocol {
         return items.map {
             var previewImage = Data()
             if $0.size == nil { sizeString = "" } else { sizeString = sizeFormatter.string(fromByteCount: $0.size ?? 0) }
-            if !State.offlineWarned { previewImage = self.network.loadPreviewImage(url: $0.preview ?? "") }
-            return DataUI(name: $0.name ?? "",
+            if !Flag.offlineWarned { previewImage = self.network.loadPreviewImage(url: $0.preview ?? "") }
+            return DataUI(public_key: $0.public_key ?? "",
+                          public_url: $0.public_url ?? "",
+                          name: $0.name ?? "",
                           preview: previewImage,
                           created: dateFormatterIn.date(from: $0.created ?? "") ?? Date(),
                           modified: dateFormatterIn.date(from: $0.modified ?? "") ?? Date(),

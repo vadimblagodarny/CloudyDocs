@@ -12,3 +12,9 @@ struct ItemUI {
 struct Download: Codable {
     let href: String?
 }
+
+struct Link: Codable {
+    let href: String?
+    let method: String?
+    let templated: Bool?
+}

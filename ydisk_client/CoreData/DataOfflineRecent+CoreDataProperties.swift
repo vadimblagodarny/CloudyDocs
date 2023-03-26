@@ -25,6 +25,8 @@ extension DataOfflineRecent {
     @NSManaged public var preview: Data?
     @NSManaged public var size: String?
     @NSManaged public var type: String?
+    @NSManaged public var public_key: String?
+    @NSManaged public var public_url: String?
 
 }
 
