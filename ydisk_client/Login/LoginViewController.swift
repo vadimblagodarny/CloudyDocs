@@ -1,10 +1,6 @@
 import UIKit
 import WebKit
 
-protocol LoginViewDelegate: AnyObject { // MARK: Move delegate and extension to viewmodel
-    func passToken(token: String)
-}
-
 class LoginViewController: UIViewController {
     var viewModel: LoginViewModelProtocol!
     let loginView = WKWebView()

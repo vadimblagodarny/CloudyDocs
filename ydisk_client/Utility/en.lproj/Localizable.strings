@@ -1,0 +1,43 @@
+/* 
+  Localizable.strings
+  ydisk_client
+
+  Created by Vadim Blagodarny on 25.03.2023.
+  
+*/
+
+// English
+"ItemListRole.Recents" = "Recent";
+"ItemListRole.AllFiles" = "All Files";
+"ItemListRole.Published" = "Published";
+
+"Onboarding.Label.One" = "All your documents\nare stored safely in the cloud";
+"Onboarding.Label.Two" = "Access your files\nwhile being offline";
+"Onboarding.Label.Three" = "Share your documents\nwith others";
+"Onboarding.Button.Next" = "Next";
+"Onboarding.Button.Login" = "Login";
+
+"ItemList.Label.Offline" = "Network offline";
+"ItemList.Label.Empty" = "Folder is empty";
+"ItemList.AlertAuth.Title" = "Authorization error";
+"ItemList.AlertAuth.Message" = "Session expired. Proceed to Login";
+"ItemList.NavigationTitle.AllFiles" = "All Files";
+"ItemList.NavigationTitle.Recent" = "Recent";
+"ItemList.NavigationTitle.Published" = "Published";
+
+"Common.Button.Close" = "Close";
+"Common.Button.Cancel" = "Cancel";
+"Common.Button.Ok" = "Ok";
+"Common.AlertError.Title" = "Error";
+
+"ItemDetails.AlertShare.Title" = "Share";
+"ItemDetails.AlertShare.ButtonFile" = "Content";
+"ItemDetails.AlertShare.ButtonLink" = "Link";
+"ItemDetails.AlertDelete.Title" = "This file is going to be deleted";
+"ItemDetails.AlertDelete.Button" = "Delete";
+"ItemDetails.AlertRename.Title" = "Rename";
+
+"Account.Button.Published" = "Published";
+"Account.NavigationTitle" = "Account";
+"Account.Chart.GbFree" = "Gb free";
+"Account.Chart.GbUsed" = "Gb used";

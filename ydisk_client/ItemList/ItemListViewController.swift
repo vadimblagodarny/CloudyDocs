@@ -35,20 +35,24 @@ class ItemListViewController: UIViewController {
     private lazy var offlineLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Offline mode / No cache"
+        label.text = Text.ItemList.labelOffline
         return label
     }()
     
+    private lazy var emptyLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = Text.ItemList.labelEmpty
+        return label
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
-        view.overrideUserInterfaceStyle = .light
-        tabBarController?.overrideUserInterfaceStyle = .light
-
+        
         viewModel.invokeAuthSignal.bind { [weak self] signal in
             if signal != nil {
-                let alert = UIAlertController(title: "Warning", message: "Сессия устарела. Необходима повторная авторизация", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Close", style: .default))
+                let alert = UIAlertController(title: Text.ItemList.alertAuthTitle, message: Text.ItemList.alertAuthMessage, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: Text.Common.buttonClose, style: .default))
                 self?.present(alert, animated: true)
                 UserDefaults.standard.removeObject(forKey: "API.Token")
                 Token.value = ""
@@ -65,6 +69,11 @@ class ItemListViewController: UIViewController {
             }
             self?.tableView.reloadData()
             self?.activityIndicator.stopAnimating()
+            
+            if self!.dataUI.isEmpty {
+                self!.dataUI = [DataUI(public_key: nil, public_url: nil, name: nil, preview: nil, created: nil, modified: nil, path: nil, md5: nil, type: nil, mime_type: "custom/empty", size: nil)]
+            }
+            
             if self?.dataUI[0].mime_type == "custom/offline" {
                 self?.tableView.allowsSelection = false
                 self?.offlineLabel.isHidden = false
@@ -72,6 +81,15 @@ class ItemListViewController: UIViewController {
                 self?.tableView.allowsSelection = true
                 self?.offlineLabel.isHidden = true
             }
+            
+            if self?.dataUI[0].mime_type == "custom/empty" {
+                self?.tableView.allowsSelection = false
+                self?.emptyLabel.isHidden = false
+            } else {
+                self?.tableView.allowsSelection = true
+                self?.emptyLabel.isHidden = true
+            }
+
         }
 
         viewModel.openItemSignal.bind { [weak self] item in
@@ -84,22 +102,45 @@ class ItemListViewController: UIViewController {
         viewModel.alertSignal.bind { [weak self] error in
             if let error = error {
                 self?.activityIndicator.stopAnimating()
-                guard !State.offlineWarned else { return } // Показать предупреждение отсуствия сети один раз
-                let alert = UIAlertController(title: "Warning", message: error, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Close", style: .default, handler: { [weak self] _ in
+                guard !Flag.offlineWarned else { return } // Показать предупреждение отсуствия сети один раз
+                let alert = UIAlertController(title: Text.Common.alertErrorTitle, message: error, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: Text.Common.buttonClose, style: .default, handler: { [weak self] _ in
                     // Устраняем залипание tableView при вызове этого обработчика
                     self?.tableView.refreshControl?.beginRefreshing()
                     self?.tableView.refreshControl?.endRefreshing()
                 }))
                 self?.viewModel.alertSignal.value = nil
                 self?.present(alert, animated: true)
-                State.offlineWarned = true // Показали предупреждение
+                Flag.offlineWarned = true // Показали предупреждение
             }
         }
         
         setupViews()
+        setupConstraints()
         viewModel.persistentStoreLoad()
+        getData()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tabBarController?.overrideUserInterfaceStyle = .light
+        if tabBarController?.tabBar.isHidden == true {
+            tabBarController?.tabBar.isHidden = false
+        }
+        view.backgroundColor = .white
+        view.overrideUserInterfaceStyle = .light
+        setupNavigationTitles()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if Flag.needsReload {
+            Flag.needsReload.toggle()
+            refresh(refreshControl: tableView.refreshControl!)
+        }
 
+    }
+    
+    func getData() {
         switch viewModel.itemListRole {
         case .recentsViewRole:
             activityIndicator.startAnimating()
@@ -107,31 +148,19 @@ class ItemListViewController: UIViewController {
         case .allFilesViewRole:
             activityIndicator.startAnimating()
             viewModel.getDiskList(offset: 0)
+        case .publishedViewRole:
+            activityIndicator.startAnimating()
+            viewModel.getDiskList(offset: 0)
         }
-
-        setupConstraints()
-
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        // Unhide TabBar after successful onboarding
-        if tabBarController?.tabBar.isHidden == true {
-            tabBarController?.tabBar.isHidden = false
-        }
-        
-        view.backgroundColor = .white
-        view.overrideUserInterfaceStyle = .light
-        tabBarController?.overrideUserInterfaceStyle = .light
-        setupNavigationTitles()
     }
     
     func setupViews() {
         view.addSubview(tableView)
         view.addSubview(activityIndicator)
         view.addSubview(offlineLabel)
+        view.addSubview(emptyLabel)
         offlineLabel.isHidden = true
+        emptyLabel.isHidden = true
     }
     
     func setupConstraints() {
@@ -142,6 +171,8 @@ class ItemListViewController: UIViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             offlineLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             offlineLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            emptyLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
@@ -151,18 +182,19 @@ class ItemListViewController: UIViewController {
         let topTitle = NSString(string: viewModel.diskPath).lastPathComponent.components(separatedBy: "&")[0]
         
         if topTitle == "disk:" {
-            navigationItem.title = "Все Файлы"
+            navigationItem.title = Text.ItemList.navigationTitleAllFiles
         } else {
             navigationItem.title = topTitle.removingPercentEncoding
         }
         
-        if viewModel.itemListRole == .recentsViewRole { navigationItem.title = "Последние" }
-        
+        if viewModel.itemListRole == .recentsViewRole { navigationItem.title = Text.ItemList.navigationTitleRecent }
+        if viewModel.itemListRole == .publishedViewRole { navigationItem.title = Text.ItemList.navigationTitlePublished }
+
         let backBarButtonItem = UIBarButtonItem()
         let backBarButtonTitle = NSString(string: viewModel.diskPath).lastPathComponent.components(separatedBy: "&")[0].removingPercentEncoding
         
         if backBarButtonTitle == "disk:" {
-            backBarButtonItem.title = "Все Файлы"
+            backBarButtonItem.title = Text.ItemList.navigationTitleAllFiles
         } else {
             backBarButtonItem.title = backBarButtonTitle
         }

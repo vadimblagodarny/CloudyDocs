@@ -3,24 +3,24 @@ import UIKit
 
 protocol NetworkProtocol {
     var observation: NSKeyValueObservation? { get }
-    var networkProgressSignal: Box<Double> { get }
+    var networkProgressSignal: Box<Double?> { get }
 
-    func dataRequest(url: String, completion: @escaping (Data?, HTTPURLResponse, Error?) -> Void)
+    func dataRequest(method: String, url: String, completion: @escaping (Data?, HTTPURLResponse, Error?) -> Void)
     func loadPreviewImage(url: String) -> Data
 }
 
 class Network: NetworkProtocol {
     var observation: NSKeyValueObservation?
-    var networkProgressSignal: Box<Double> = Box(0.0)
+    var networkProgressSignal: Box<Double?> = Box(nil)
     
     deinit {
         observation?.invalidate()
     }
 
-    func dataRequest(url: String , completion: @escaping (Data?, HTTPURLResponse, Error?) -> Void) { //
+    func dataRequest(method: String, url: String, completion: @escaping (Data?, HTTPURLResponse, Error?) -> Void) {
         guard let url = URL(string: url) else { return }
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        request.httpMethod = method
         request.setValue("OAuth \(Token.value)", forHTTPHeaderField: "Authorization")
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
@@ -34,9 +34,7 @@ class Network: NetworkProtocol {
                 self.networkProgressSignal.value = progress.fractionCompleted
             }
         }
-        
         task.resume()
-
     }
 
     func loadPreviewImage(url: String) -> Data {

@@ -1,0 +1,43 @@
+/* 
+  Localizable.strings
+  ydisk_client
+
+  Created by Vadim Blagodarny on 25.03.2023.
+  
+*/
+
+// Russian
+"ItemListRole.Recents" = "Последние";
+"ItemListRole.AllFiles" = "Все Файлы";
+"ItemListRole.Published" = "Опубликованные";
+
+"Onboarding.Label.One" = "Теперь все ваши\nдокументы в одном месте";
+"Onboarding.Label.Two" = "Доступ к файлам\nбез интернета";
+"Onboarding.Label.Three" = "Делитесь вашими файлами\nс другими пользователями";
+"Onboarding.Button.Next" = "Далее";
+"Onboarding.Button.Login" = "Войти";
+
+"ItemList.Label.Offline" = "Нет связи с сетью";
+"ItemList.Label.Empty" = "В этой папке нет файлов";
+"ItemList.AlertAuth.Title" = "Ошибка авторизации";
+"ItemList.AlertAuth.Message" = "Сессия устарела. Необходима повторная авторизация";
+"ItemList.NavigationTitle.AllFiles" = "Все Файлы";
+"ItemList.NavigationTitle.Recent" = "Последние";
+"ItemList.NavigationTitle.Published" = "Опубликованные";
+
+"Common.Button.Close" = "Закрыть";
+"Common.Button.Cancel" = "Отмена";
+"Common.Button.Ok" = "Ok";
+"Common.AlertError.Title" = "Ошибка";
+
+"ItemDetails.AlertShare.Title" = "Поделиться";
+"ItemDetails.AlertShare.ButtonFile" = "Файлом";
+"ItemDetails.AlertShare.ButtonLink" = "Ссылкой";
+"ItemDetails.AlertDelete.Title" = "Данный файл будет удален";
+"ItemDetails.AlertDelete.Button" = "Удалить";
+"ItemDetails.AlertRename.Title" = "Переименование";
+
+"Account.Button.Published" = "Опубликованные";
+"Account.NavigationTitle" = "Профиль";
+"Account.Chart.GbFree" = "Свободно Гб";
+"Account.Chart.GbUsed" = "Занято Гб";
