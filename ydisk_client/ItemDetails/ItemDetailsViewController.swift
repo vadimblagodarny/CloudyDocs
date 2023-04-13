@@ -251,7 +251,4 @@ class ItemDetailsViewController: UIViewController {
     
 }
 
-extension ItemDetailsViewController: WKNavigationDelegate {
-//    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-//    }
-}
+extension ItemDetailsViewController: WKNavigationDelegate {}

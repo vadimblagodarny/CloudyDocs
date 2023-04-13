@@ -1,12 +1,3 @@
-/* 
-  Localizable.strings
-  ydisk_client
-
-  Created by Vadim Blagodarny on 25.03.2023.
-  
-*/
-
-// Russian
 "ItemListRole.Recents" = "Последние";
 "ItemListRole.AllFiles" = "Все Файлы";
 "ItemListRole.Published" = "Опубликованные";
@@ -25,11 +16,6 @@
 "ItemList.NavigationTitle.Recent" = "Последние";
 "ItemList.NavigationTitle.Published" = "Опубликованные";
 
-"Common.Button.Close" = "Закрыть";
-"Common.Button.Cancel" = "Отмена";
-"Common.Button.Ok" = "Ok";
-"Common.AlertError.Title" = "Ошибка";
-
 "ItemDetails.AlertShare.Title" = "Поделиться";
 "ItemDetails.AlertShare.ButtonFile" = "Файлом";
 "ItemDetails.AlertShare.ButtonLink" = "Ссылкой";
@@ -41,3 +27,12 @@
 "Account.NavigationTitle" = "Профиль";
 "Account.Chart.GbFree" = "Свободно Гб";
 "Account.Chart.GbUsed" = "Занято Гб";
+"Account.ExitAlert.Text" = "Вы уверены, что хотите выйти? Все локальные данные будут удалены";
+
+"Common.Button.Close" = "Закрыть";
+"Common.Button.Cancel" = "Отмена";
+"Common.Button.Ok" = "Ok";
+"Common.Button.Yes" = "Да";
+"Common.AlertError.Title" = "Ошибка";
+"Common.AlertError.HTTPStatus" = "Код ответа на запрос: ";
+"Common.AlertWarning.Title" = "Внимание";

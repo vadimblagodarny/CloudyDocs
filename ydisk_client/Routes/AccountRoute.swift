@@ -13,7 +13,6 @@ extension AccountRoute where Self: Router {
         view.viewModel = viewModel
         router.root = view
         let navigation = UINavigationController(rootViewController: view)
-//        navigation.tabBarItem = UITabBarItem(title: Text.Account.navigationTitleAccount, image: UIImage(systemName: "person.crop.circle"), tag: 1)
         navigation.tabBarItem = UITabBarItem(title: nil, image: UIImage(systemName: "person.crop.circle"), tag: 1)
         return navigation
     }

@@ -5,7 +5,7 @@ protocol ItemListRoute {
     func openItemList(role: ItemListRole, path: String?)
 }
 
-extension ItemListRoute where Self: Router { // Recents & All Files View Route
+extension ItemListRoute where Self: Router {
     func makeItemList(role: ItemListRole, tabImage: UIImage, path: String?) -> UIViewController {
         let router = DefaultRouter(rootTransition: EmptyTransition())
         let network = Network()
@@ -15,12 +15,6 @@ extension ItemListRoute where Self: Router { // Recents & All Files View Route
         router.root = view
         let navigation = UINavigationController(rootViewController: view)
         switch role {
-//        case .recentsViewRole:
-//            navigation.tabBarItem = UITabBarItem(title: Text.ItemListRole.recents, image: tabImage, tag: 0)
-//        case .allFilesViewRole:
-//            navigation.tabBarItem = UITabBarItem(title: Text.ItemListRole.allFiles, image: tabImage, tag: 0)
-//        case .publishedViewRole:
-//            navigation.tabBarItem = UITabBarItem(title: Text.ItemListRole.published, image: tabImage, tag: 0)
         case .recentsViewRole:
             navigation.tabBarItem = UITabBarItem(title: nil, image: tabImage, tag: 0)
         case .allFilesViewRole:

@@ -119,7 +119,7 @@ class OnboardingViewController: UIViewController {
             proceedToAuth()
         } else {
             setupViews()
-            UserDefaults.standard.set(true, forKey: "SeenOnboarding") // Flag setting on first run
+            UserDefaults.standard.set(true, forKey: "SeenOnboarding")
         }
     }
     
@@ -141,7 +141,6 @@ class OnboardingViewController: UIViewController {
         pageControl.widthAnchor.constraint(equalToConstant: 200).isActive = true
         pageControl.heightAnchor.constraint(equalToConstant: 50).isActive = true
 
-        // centerX constant scale factor: x0 - first screen, x1.5 - second screen, x1 - third screen
         onboardingLabelOne.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
         onboardingLabelOne.widthAnchor.constraint(equalToConstant: 300).isActive = true
         onboardingLabelOne.topAnchor.constraint(equalTo: view.topAnchor, constant: 150).isActive = true
@@ -171,10 +170,9 @@ class OnboardingViewController: UIViewController {
     }
 
     func proceedToAuth() {
-        // Try to use locally stored authentication token
         if let token = UserDefaults.standard.string(forKey: "API.Token") {
             Token.value = token
-            viewModel.onboardingViewDelegate?.authComplete() // >> ItemListViewModel.getDiskList()
+            viewModel.onboardingViewDelegate?.authComplete()
             viewModel.close()
         } else if Token.value.isEmpty {
             viewModel.openLogin()

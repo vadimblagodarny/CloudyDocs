@@ -12,7 +12,7 @@ protocol OnboardingViewModelProtocol {
 }
 
 class OnboardingViewModel: OnboardingViewModelProtocol {
-    typealias Routes = LoginRoute & Closable // Направления, в которых возможно движение из этого класса
+    typealias Routes = LoginRoute & Closable
     private var router: Routes
     weak var onboardingViewDelegate: OnboardingViewDelegate?
     
@@ -31,7 +31,6 @@ class OnboardingViewModel: OnboardingViewModelProtocol {
 
 extension OnboardingViewModel: LoginViewDelegate {
     func passToken(token: String) {
-        Token.value = token
         onboardingViewDelegate?.authComplete()
         self.close()
     }

@@ -67,7 +67,6 @@ class ItemDetailsViewModel: ItemDetailsViewModelProtocol {
         DispatchQueue.global().async {
             self.network.dataRequest(method: "GET", url: urlString) { data, response, error in
                 if error != nil {
-                    // MARK: - Обработка ошибки соединения и подгрузка данных из Core Data
                     let fetchRequest = self.itemFetchedResultsController.fetchRequest
                     let context = self.persistentContainer.viewContext
 
@@ -106,7 +105,6 @@ class ItemDetailsViewModel: ItemDetailsViewModelProtocol {
                                                                    size: self.dataUI.size)
                             }
                             
-                            // MARK: - Инициализация Core Data и получение всех объектов
                             let context = self.persistentContainer.viewContext
                             let entity = NSEntityDescription.entity(forEntityName: "DataOfflineItem", in: context)
                             let fetchRequest = self.itemFetchedResultsController.fetchRequest
@@ -118,7 +116,6 @@ class ItemDetailsViewModel: ItemDetailsViewModelProtocol {
                                 print("Core Data fetch error: \(error)")
                             }
                             
-                            // MARK: - Проверка на существующий объект в Core Data и сохранение нового
                             if !objects.contains(where: { $0.md5 == self.dataUI.md5 }) {
                                 let object = NSManagedObject(entity: entity!, insertInto: context)
                                                                 

@@ -141,8 +141,8 @@
 			isa = PBXGroup;
 			children = (
 				DD19E89D297B442900CEF352 /* Network.swift */,
-				DD9CD7402981E15B007F0DC0 /* GlobalStorage.swift */,
 				DD9CD73C2981B9DE007F0DC0 /* Box.swift */,
+				DD9CD7402981E15B007F0DC0 /* GlobalStorage.swift */,
 				DD1D0F9529CF7365002CF3F8 /* Localizable.strings */,
 			);
 			path = Utility;

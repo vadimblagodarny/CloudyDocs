@@ -11,7 +11,6 @@ final class AnimatedTransition: NSObject {
 }
 
 extension AnimatedTransition: Transition {
-    // MARK: - Transition
     func open(_ viewController: UIViewController, from: UIViewController, completion: (() -> Void)?) {
         viewController.transitioningDelegate = self
         viewController.modalPresentationStyle = .custom

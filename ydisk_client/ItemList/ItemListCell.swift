@@ -53,7 +53,7 @@ class ItemListCell: UITableViewCell {
     }
     
     func configure(viewModel: DataUI, network: NetworkProtocol) {
-        if viewModel.mime_type == "custom/offline" { return } // Убедимся, что работаем с реальным списком
+        if viewModel.mime_type == "custom/offline" { return }
         let dateFormatterOut = DateFormatter()
         dateFormatterOut.dateFormat = "dd.MM.yy, HH:mm"
         let dateString = dateFormatterOut.string(from: viewModel.created!)

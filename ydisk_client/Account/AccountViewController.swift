@@ -31,6 +31,16 @@ class AccountViewController: UIViewController {
         return button
     }()
 
+    private lazy var exitBarButtonItem: UIBarButtonItem = {
+        let button = UIBarButtonItem()
+        button.image = UIImage(systemName: "rectangle.portrait.and.arrow.right")
+        button.tintColor = .red
+        button.style = .plain
+        button.target = self
+        button.action = #selector(exitBarButtonItemTap)
+        return button
+    }()
+    
     private lazy var chart: PieChartView = {
         let chart = PieChartView()
         chart.translatesAutoresizingMaskIntoConstraints = false
@@ -61,14 +71,16 @@ class AccountViewController: UIViewController {
         }
         
         activityIndicator.startAnimating()
+        viewModel.loadPersistentStores()
         viewModel.getDiskInfo()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         view.backgroundColor = .white
         view.overrideUserInterfaceStyle = .light
         tabBarController?.overrideUserInterfaceStyle = .light
+        navigationItem.rightBarButtonItems = [exitBarButtonItem]
     }
     
     func setupViews() {
@@ -89,15 +101,15 @@ class AccountViewController: UIViewController {
             chart.heightAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -40),
             publishedButton.centerXAnchor.constraint(equalTo: chart.centerXAnchor),
             publishedButton.bottomAnchor.constraint(equalTo: chart.bottomAnchor, constant: 80),
-            activityIndicator.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            activityIndicator.centerYAnchor.constraint(equalTo: scrollView.centerYAnchor)
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
     
     func drawChart(_ diskInfo: DiskInfo) {
         let freeSpaceGb = Double(diskInfo.total_space - diskInfo.used_space) / (1024.0 * 1024.0 * 1024.0)
         let usedSpaceGb = Double(diskInfo.used_space) / (1024.0 * 1024.0 * 1024.0)
-        
+
         let set = PieChartDataSet(entries: [
             PieChartDataEntry(value: freeSpaceGb, label: Text.Account.chartGbFree),
             PieChartDataEntry(value: usedSpaceGb, label: Text.Account.chartGbUsed)
@@ -118,8 +130,25 @@ class AccountViewController: UIViewController {
     @objc func publishTap(sender: UIButton!) {
         viewModel.showPublished()
     }
+    
+    @objc func exitBarButtonItemTap() {
+        let alert = UIAlertController(title: Text.Common.alertWarningTitle,
+                                      message: Text.Account.accountExitAlertText,
+                                      preferredStyle: .actionSheet)
+        
+        alert.addAction(
+            .init(title: Text.Common.buttonYes, style: .destructive) { [weak self] _ in
+                self?.viewModel.endSession()
+            }
+        )
+        
+        alert.addAction(
+            .init(title: Text.Common.buttonCancel, style: .cancel)
+        )
+        
+        self.present(alert, animated: true)
+    }
+
 }
 
-extension AccountViewController: ChartViewDelegate {
-    
-}
+extension AccountViewController: ChartViewDelegate {}

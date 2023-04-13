@@ -102,16 +102,18 @@ class ItemListViewController: UIViewController {
         viewModel.alertSignal.bind { [weak self] error in
             if let error = error {
                 self?.activityIndicator.stopAnimating()
-                guard !Flag.offlineWarned else { return } // Показать предупреждение отсуствия сети один раз
+                if error.hasPrefix(Text.Common.alertErrorHTTPStatus) {
+                } else if Flag.offlineWarned {
+                    return
+                }
                 let alert = UIAlertController(title: Text.Common.alertErrorTitle, message: error, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: Text.Common.buttonClose, style: .default, handler: { [weak self] _ in
-                    // Устраняем залипание tableView при вызове этого обработчика
                     self?.tableView.refreshControl?.beginRefreshing()
                     self?.tableView.refreshControl?.endRefreshing()
                 }))
                 self?.viewModel.alertSignal.value = nil
                 self?.present(alert, animated: true)
-                Flag.offlineWarned = true // Показали предупреждение
+                Flag.offlineWarned = true
             }
         }
         
@@ -137,7 +139,6 @@ class ItemListViewController: UIViewController {
             Flag.needsReload.toggle()
             refresh(refreshControl: tableView.refreshControl!)
         }
-
     }
     
     func getData() {

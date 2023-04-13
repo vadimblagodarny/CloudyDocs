@@ -52,6 +52,7 @@ extension LoginViewModel: WKNavigationDelegate {
             guard let components = URLComponents(string: targetString) else { return }
             if let token = components.queryItems?.first(where: { $0.name == "access_token" })?.value {
                 UserDefaults.standard.set(token, forKey: "API.Token")
+                Token.value = token
                 loginViewDelegate?.passToken(token: token)
                 self.dismiss()
             }

@@ -1,17 +1,7 @@
-//
-//  DataOfflineRecent+CoreDataProperties.swift
-//  ydisk_client
-//
-//  Created by Vadim Blagodarny on 27.02.2023.
-//
-//
-
 import Foundation
 import CoreData
 
-
 extension DataOfflineRecent {
-
     @nonobjc public class func fetchRequest() -> NSFetchRequest<DataOfflineRecent> {
         return NSFetchRequest<DataOfflineRecent>(entityName: "DataOfflineRecent")
     }
@@ -27,7 +17,6 @@ extension DataOfflineRecent {
     @NSManaged public var type: String?
     @NSManaged public var public_key: String?
     @NSManaged public var public_url: String?
-
 }
 
 extension DataOfflineRecent : Identifiable {

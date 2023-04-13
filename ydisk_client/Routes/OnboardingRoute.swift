@@ -9,7 +9,7 @@ extension OnboardingRoute where Self: Router {
         let router = DefaultRouter(rootTransition: transition)
         let viewModel = OnboardingViewModel(router: router)
         let view = OnboardingViewController()
-        viewModel.onboardingViewDelegate = opener // itemListViewModel
+        viewModel.onboardingViewDelegate = opener
         view.viewModel = viewModel
         view.navigationItem.hidesBackButton = true
         router.root = view

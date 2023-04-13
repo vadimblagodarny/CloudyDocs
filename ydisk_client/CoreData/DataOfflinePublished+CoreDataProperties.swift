@@ -1,17 +1,7 @@
-//
-//  DataOfflinePublished+CoreDataProperties.swift
-//  ydisk_client
-//
-//  Created by Vadim Blagodarny on 18.03.2023.
-//
-//
-
 import Foundation
 import CoreData
 
-
 extension DataOfflinePublished {
-
     @nonobjc public class func fetchRequest() -> NSFetchRequest<DataOfflinePublished> {
         return NSFetchRequest<DataOfflinePublished>(entityName: "DataOfflinePublished")
     }
@@ -27,7 +17,6 @@ extension DataOfflinePublished {
     @NSManaged public var public_key: String?
     @NSManaged public var size: String?
     @NSManaged public var type: String?
-
 }
 
 extension DataOfflinePublished : Identifiable {

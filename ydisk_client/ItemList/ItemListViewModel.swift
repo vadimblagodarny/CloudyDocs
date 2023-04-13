@@ -114,7 +114,6 @@ class ItemListViewModel: ItemListViewModelProtocol {
 
         DispatchQueue.global().async {
             self.network.dataRequest(method: "GET", url: url) { data, response, error in
-                // MARK: - Обработка ошибки соединения и подгрузка данных из Core Data
                 if let error = error {
                     DispatchQueue.main.async {
                         self.alertSignal.value = error.localizedDescription
@@ -203,17 +202,20 @@ class ItemListViewModel: ItemListViewModelProtocol {
                     return
                 }
 
-                // MARK: - Обработка ошибки авторизации
                 if response.statusCode == 401 {
                     DispatchQueue.main.async {
                         self.invokeAuthSignal.value = true
                     }
                     return
+                } else if response.statusCode != 200 {
+                    DispatchQueue.main.async {
+                        self.alertSignal.value = Text.Common.alertErrorHTTPStatus + String(response.statusCode)
+                    }
+                    return
                 }
                 
-                // MARK: - Обработка полученных данных в зависимости от типа экрана
                 guard let data = data else { return }
-                Flag.offlineWarned = false // Сеть появилась -> сброс предупреждения об отсуствии сети
+                Flag.offlineWarned = false
 
                 switch self.itemListRole {
                 case .recentsViewRole:
@@ -222,7 +224,6 @@ class ItemListViewModel: ItemListViewModelProtocol {
                         DispatchQueue.main.async {
                             let processedData = self.processRawData(items: decodedJSON.items ?? [])
 
-                            // MARK: - Инициализация Core Data и очистка хранилища списка последних файлов
                             let context = self.persistentContainer.viewContext
                             let entity = NSEntityDescription.entity(forEntityName: "DataOfflineRecent", in: context)
                             let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "DataOfflineRecent")
@@ -234,7 +235,6 @@ class ItemListViewModel: ItemListViewModelProtocol {
                                 print("Core Data cleanup error: \(error)")
                             }
                             
-                            // MARK: - Сохранение полученных данных в Core Data
                             for data in processedData {
                                 let object = NSManagedObject(entity: entity!, insertInto: context)
                                 object.setValue(data.public_key, forKey: "public_key")
@@ -256,7 +256,6 @@ class ItemListViewModel: ItemListViewModelProtocol {
                                 print("Core Data save error: \(error)")
                             }
 
-                            // MARK: - Передача полученных данных в представление данных
                             self.itemsSignal.value = processedData
                         }
                     } catch {
@@ -271,7 +270,6 @@ class ItemListViewModel: ItemListViewModelProtocol {
                             let processedData = self.processRawData(items: decodedJSON._embedded?.items ?? [])
                             let path = decodedJSON.path
                             
-                            // MARK: - Инициализация Core Data
                             let context = self.persistentContainer.viewContext
                             let entity = NSEntityDescription.entity(forEntityName: "DataOfflineResource", in: context)
                             let fetchRequest = self.allFilesFetchedResultsController.fetchRequest
@@ -285,7 +283,6 @@ class ItemListViewModel: ItemListViewModelProtocol {
                             
                             let encodedData = try? JSONEncoder().encode(processedData)
                             
-                            // MARK: - Проверка на существующий объект в Core Data и сохранение нового
                             if objects.contains(where: { $0.path == decodedJSON.path }) {
                                 let object = objects.filter { $0.path == decodedJSON.path }
                                 context.delete(object[0])
@@ -306,7 +303,6 @@ class ItemListViewModel: ItemListViewModelProtocol {
                                 print("Core Data save error: \(error)")
                             }
 
-                            // MARK: - Передача полученных данных в представление данных
                             self.itemsSignal.value = processedData
                         }
                     } catch {
@@ -319,7 +315,6 @@ class ItemListViewModel: ItemListViewModelProtocol {
                         DispatchQueue.main.async {
                             let processedData = self.processRawData(items: decodedJSON.items ?? [])
 
-                            // MARK: - Инициализация Core Data и очистка хранилища списка опубликованных файлов
                             let context = self.persistentContainer.viewContext
                             let entity = NSEntityDescription.entity(forEntityName: "DataOfflinePublished", in: context)
                             let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "DataOfflinePublished")
@@ -331,7 +326,6 @@ class ItemListViewModel: ItemListViewModelProtocol {
                                 print("Core Data cleanup error: \(error)")
                             }
                             
-                            // MARK: - Сохранение полученных данных в Core Data
                             for data in processedData {
                                 let object = NSManagedObject(entity: entity!, insertInto: context)
                                 object.setValue(data.public_key, forKey: "public_key")
@@ -353,7 +347,6 @@ class ItemListViewModel: ItemListViewModelProtocol {
                                 print("Core Data save error: \(error)")
                             }
 
-                            // MARK: - Передача полученных данных в представление данных
                             self.itemsSignal.value = processedData
                         }
                     } catch {

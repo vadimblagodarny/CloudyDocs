@@ -67,12 +67,16 @@ enum Text {
         static let navigationTitleAccount = Bundle.main.localizedString(forKey: "Account.NavigationTitle", value: "", table: "Localizable")
         static let chartGbFree = Bundle.main.localizedString(forKey: "Account.Chart.GbFree", value: "", table: "Localizable")
         static let chartGbUsed = Bundle.main.localizedString(forKey: "Account.Chart.GbUsed", value: "", table: "Localizable")
+        static let accountExitAlertText = Bundle.main.localizedString(forKey: "Account.ExitAlert.Text", value: "", table: "Localizable")
     }
     
     enum Common {
         static let buttonOk = Bundle.main.localizedString(forKey: "Common.Button.Ok", value: "", table: "Localizable")
+        static let buttonYes = Bundle.main.localizedString(forKey: "Common.Button.Yes", value: "", table: "Localizable")
         static let buttonCancel = Bundle.main.localizedString(forKey: "Common.Button.Cancel", value: "", table: "Localizable")
         static let buttonClose = Bundle.main.localizedString(forKey: "Common.Button.Close", value: "", table: "Localizable")
-        static let alertErrorTitle = Bundle.main.localizedString(forKey: "ItemList.AlertError.Title", value: "", table: "Localizable")
+        static let alertErrorTitle = Bundle.main.localizedString(forKey: "Common.AlertError.Title", value: "", table: "Localizable")
+        static let alertErrorHTTPStatus = Bundle.main.localizedString(forKey: "Common.AlertError.HTTPStatus", value: "", table: "Localizable")
+        static let alertWarningTitle = Bundle.main.localizedString(forKey: "Common.AlertWarning.Title", value: "", table: "Localizable")
     }
 }

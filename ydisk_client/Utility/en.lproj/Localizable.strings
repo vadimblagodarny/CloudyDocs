@@ -1,12 +1,3 @@
-/* 
-  Localizable.strings
-  ydisk_client
-
-  Created by Vadim Blagodarny on 25.03.2023.
-  
-*/
-
-// English
 "ItemListRole.Recents" = "Recent";
 "ItemListRole.AllFiles" = "All Files";
 "ItemListRole.Published" = "Published";
@@ -25,11 +16,6 @@
 "ItemList.NavigationTitle.Recent" = "Recent";
 "ItemList.NavigationTitle.Published" = "Published";
 
-"Common.Button.Close" = "Close";
-"Common.Button.Cancel" = "Cancel";
-"Common.Button.Ok" = "Ok";
-"Common.AlertError.Title" = "Error";
-
 "ItemDetails.AlertShare.Title" = "Share";
 "ItemDetails.AlertShare.ButtonFile" = "Content";
 "ItemDetails.AlertShare.ButtonLink" = "Link";
@@ -41,3 +27,12 @@
 "Account.NavigationTitle" = "Account";
 "Account.Chart.GbFree" = "Gb free";
 "Account.Chart.GbUsed" = "Gb used";
+"Account.ExitAlert.Text" = "Are you sure you want to end your session? All cached data will be deleted";
+
+"Common.Button.Close" = "Close";
+"Common.Button.Cancel" = "Cancel";
+"Common.Button.Ok" = "Ok";
+"Common.Button.Yes" = "Yes";
+"Common.AlertError.Title" = "Error";
+"Common.AlertError.HTTPStatus" = "HTTP Response Code: ";
+"Common.AlertWarning.Title" = "Warning";
