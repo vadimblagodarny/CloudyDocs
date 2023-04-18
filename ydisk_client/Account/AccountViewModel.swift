@@ -1,4 +1,5 @@
 import Foundation
+import WebKit
 import CoreData
 
 protocol AccountViewModelProtocol {
@@ -80,6 +81,10 @@ class AccountViewModel: AccountViewModelProtocol {
                 print("Core Data cleanup error: \(error)")
             }
         }
+        
+        Token.value = ""
+        HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
+        UserDefaults.standard.set(true, forKey: "SeenOnboarding")
     }
     
     func endSession() {
