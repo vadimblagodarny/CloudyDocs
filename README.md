@@ -1,2 +1,12 @@
-# ydisk-client
- Cloud Documents App
+# Cloudy Docs
+
+### Удобный клиент для Yandex.Disk с возможностью работы оффлайн
+
+- Фреймворк UIKit
+- Архитектура MVVM
+- Работа с сетью
+- Использование GCD
+- Yandex API
+- CoreData
+- Верстка кодом
+- Использование сторонней библиотеки Charts
